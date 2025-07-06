@@ -1,0 +1,14 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>🚁 Upload Drone Images</h2>
+  <form method="POST" action="/upload/drone" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="file" class="form-label">Select Aerial Image</label>
+      <input type="file" name="file" class="form-control" accept="image/*" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+</div>
+{% endblock %}

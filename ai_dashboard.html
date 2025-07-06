@@ -1,0 +1,873 @@
+{% extends "base.html" %}
+
+{% block title %}AI Dashboard - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="ai-dashboard-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="text-white">
+                    <i data-feather="cpu" class="me-2"></i>
+                    AI Business Intelligence Dashboard
+                </h2>
+                <p class="text-secondary">Voice-enabled analytics and predictions powered by AI</p>
+            </div>
+            <div>
+                <button class="btn btn-primary me-2" id="voiceCommandBtn">
+                    <i data-feather="mic" class="me-1"></i>
+                    <span id="voiceStatus">Start Voice Command</span>
+                </button>
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-light">
+                    <i data-feather="arrow-left" class="me-1"></i>
+                    Admin Panel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Interface -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="ai-assistant-card workdesk-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="message-circle" class="me-2"></i>
+                        AI Business Assistant
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="aiChatContainer" class="ai-chat-container">
+                        <div class="ai-message">
+                            <div class="ai-avatar">AI</div>
+                            <div class="message-content">
+                                Hello! I'm your AI business assistant. I can analyze data, make predictions, and execute commands by voice. 
+                                Click the microphone button or say "Hey Assistant" to start.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ai-input-group mt-3">
+                        <input type="text" class="form-control workdesk-input" id="aiCommandInput" 
+                               placeholder="Type a command or use voice...">
+                        <button class="btn workdesk-btn-primary" onclick="sendAICommand()">
+                            <i data-feather="send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Predictions -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="prediction-card">
+                <div class="prediction-icon">
+                    <i data-feather="trending-up"></i>
+                </div>
+                <div class="prediction-content">
+                    <h4 id="revenuePrediction">$125,450</h4>
+                    <p>Predicted Monthly Revenue</p>
+                    <span class="prediction-change positive">+12.5%</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="prediction-card">
+                <div class="prediction-icon">
+                    <i data-feather="users"></i>
+                </div>
+                <div class="prediction-content">
+                    <h4 id="employeePrediction">45</h4>
+                    <p>Optimal Team Size</p>
+                    <span class="prediction-change">Next Quarter</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="prediction-card">
+                <div class="prediction-icon">
+                    <i data-feather="package"></i>
+                </div>
+                <div class="prediction-content">
+                    <h4 id="demandPrediction">320</h4>
+                    <p>Expected Requests</p>
+                    <span class="prediction-change positive">+8.3%</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="prediction-card">
+                <div class="prediction-icon">
+                    <i data-feather="alert-circle"></i>
+                </div>
+                <div class="prediction-content">
+                    <h4 id="riskScore">Low</h4>
+                    <p>Business Risk Score</p>
+                    <span class="prediction-change neutral">Stable</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Charts -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Revenue Forecast & Trends</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueForecastChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Department Efficiency Score</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="efficiencyChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Insights -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="mb-0">AI-Generated Business Insights</h5>
+                </div>
+                <div class="card-body">
+                    <div id="businessInsights" class="insights-container">
+                        <div class="insight-item">
+                            <i data-feather="info" class="insight-icon"></i>
+                            <div class="insight-content">
+                                <h6>Cash Flow Optimization</h6>
+                                <p>Based on current trends, consider reducing cash demands by 15% next month to maintain healthy reserves.</p>
+                            </div>
+                        </div>
+                        <div class="insight-item">
+                            <i data-feather="alert-triangle" class="insight-icon warning"></i>
+                            <div class="insight-content">
+                                <h6>Purchase Pattern Alert</h6>
+                                <p>IT department showing 40% increase in purchase requests. Review budget allocation.</p>
+                            </div>
+                        </div>
+                        <div class="insight-item">
+                            <i data-feather="check-circle" class="insight-icon success"></i>
+                            <div class="insight-content">
+                                <h6>Efficiency Improvement</h6>
+                                <p>Approval time reduced by 25% this month. Current workflow is optimal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Predictive Workflow Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="workflowPredictionChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-time Metrics -->
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Real-time Business Metrics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="metric-realtime">
+                                <canvas id="approvalRateGauge" width="150" height="150"></canvas>
+                                <h6 class="text-center mt-2">Approval Rate</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-realtime">
+                                <canvas id="processingTimeGauge" width="150" height="150"></canvas>
+                                <h6 class="text-center mt-2">Avg Processing Time</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-realtime">
+                                <canvas id="utilizationGauge" width="150" height="150"></canvas>
+                                <h6 class="text-center mt-2">Budget Utilization</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-realtime">
+                                <canvas id="satisfactionGauge" width="150" height="150"></canvas>
+                                <h6 class="text-center mt-2">User Satisfaction</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Voice Command Modal -->
+<div class="modal fade" id="voiceModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-body text-center">
+                <div class="voice-animation">
+                    <div class="voice-circle"></div>
+                    <div class="voice-circle"></div>
+                    <div class="voice-circle"></div>
+                </div>
+                <h5 class="mt-3">Listening...</h5>
+                <p id="voiceTranscript" class="text-secondary">Say your command</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* AI Dashboard Styles */
+.ai-dashboard-header {
+    padding: 20px 0;
+}
+
+.ai-assistant-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0, 212, 170, 0.05) 100%);
+}
+
+.ai-chat-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 20px;
+    background: var(--secondary-bg);
+    border-radius: 8px;
+}
+
+.ai-message {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.ai-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-color);
+    color: var(--primary-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.message-content {
+    flex: 1;
+    background: var(--card-bg);
+    padding: 12px 16px;
+    border-radius: 8px;
+}
+
+.ai-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.prediction-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.prediction-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 212, 170, 0.1);
+}
+
+.prediction-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 212, 170, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: var(--accent-color);
+}
+
+.prediction-content h4 {
+    color: var(--text-primary);
+    margin: 0 0 8px;
+    font-size: 2rem;
+}
+
+.prediction-change {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.prediction-change.positive { color: var(--success-color); }
+.prediction-change.negative { color: var(--danger-color); }
+.prediction-change.neutral { color: var(--info-color); }
+
+.insights-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.insight-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: var(--secondary-bg);
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.insight-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--info-color);
+}
+
+.insight-icon.warning { color: var(--warning-color); }
+.insight-icon.success { color: var(--success-color); }
+
+.insight-content h6 {
+    margin: 0 0 8px;
+    color: var(--text-primary);
+}
+
+.insight-content p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.metric-realtime {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Voice Animation */
+.voice-animation {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    height: 60px;
+    align-items: center;
+}
+
+.voice-circle {
+    width: 12px;
+    height: 12px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    animation: voice-pulse 1.4s ease-in-out infinite;
+}
+
+.voice-circle:nth-child(2) { animation-delay: 0.2s; }
+.voice-circle:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes voice-pulse {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+#voiceCommandBtn.listening {
+    background-color: var(--danger-color);
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Voice Recognition and Synthesis
+let recognition;
+let synthesis = window.speechSynthesis;
+let isListening = false;
+
+// Initialize Voice Recognition
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = function() {
+        isListening = true;
+        document.getElementById('voiceCommandBtn').classList.add('listening');
+        document.getElementById('voiceStatus').textContent = 'Listening...';
+        $('#voiceModal').modal('show');
+    };
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('voiceTranscript').textContent = transcript;
+        
+        if (event.results[0].isFinal) {
+            processVoiceCommand(transcript);
+            $('#voiceModal').modal('hide');
+        }
+    };
+
+    recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+        stopListening();
+    };
+
+    recognition.onend = function() {
+        stopListening();
+    };
+}
+
+// Voice Command Button Handler
+document.getElementById('voiceCommandBtn').addEventListener('click', function() {
+    if (isListening) {
+        stopListening();
+    } else {
+        startListening();
+    }
+});
+
+function startListening() {
+    if (recognition) {
+        recognition.start();
+    }
+}
+
+function stopListening() {
+    isListening = false;
+    document.getElementById('voiceCommandBtn').classList.remove('listening');
+    document.getElementById('voiceStatus').textContent = 'Start Voice Command';
+    $('#voiceModal').modal('hide');
+    if (recognition) {
+        recognition.stop();
+    }
+}
+
+// Process Voice Commands
+function processVoiceCommand(command) {
+    const lowerCommand = command.toLowerCase();
+    addChatMessage('user', command);
+    
+    // Command processing logic
+    if (lowerCommand.includes('revenue') || lowerCommand.includes('sales')) {
+        showRevenueAnalysis();
+    } else if (lowerCommand.includes('approve all')) {
+        approveAllPending();
+    } else if (lowerCommand.includes('show') && lowerCommand.includes('prediction')) {
+        showPredictions();
+    } else if (lowerCommand.includes('efficiency') || lowerCommand.includes('performance')) {
+        showEfficiencyReport();
+    } else if (lowerCommand.includes('risk') || lowerCommand.includes('alert')) {
+        showRiskAnalysis();
+    } else if (lowerCommand.includes('help')) {
+        showVoiceHelp();
+    } else {
+        processAIQuery(command);
+    }
+}
+
+// AI Response with Voice
+function speakResponse(text) {
+    if (synthesis) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        synthesis.speak(utterance);
+    }
+}
+
+// Add chat message
+function addChatMessage(sender, message) {
+    const chatContainer = document.getElementById('aiChatContainer');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'ai-message';
+    
+    if (sender === 'ai') {
+        messageDiv.innerHTML = `
+            <div class="ai-avatar">AI</div>
+            <div class="message-content">${message}</div>
+        `;
+        // Speak AI responses
+        speakResponse(message);
+    } else {
+        messageDiv.innerHTML = `
+            <div class="ai-avatar" style="background: var(--info-color)">You</div>
+            <div class="message-content">${message}</div>
+        `;
+    }
+    
+    chatContainer.appendChild(messageDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// Command Functions
+function showRevenueAnalysis() {
+    const response = "Based on current trends, revenue is projected to increase by 12.5% this month. " +
+                    "Main drivers are increased purchase approvals and optimized cash flow management.";
+    addChatMessage('ai', response);
+    updateRevenueForecastChart();
+}
+
+function approveAllPending() {
+    const response = "I need administrator confirmation to approve all pending requests. " +
+                    "This action will approve 15 purchase requests and 8 cash demands. Should I proceed?";
+    addChatMessage('ai', response);
+}
+
+function showPredictions() {
+    const predictions = {
+        revenue: "$125,450",
+        requests: "320",
+        efficiency: "87%",
+        risk: "Low"
+    };
+    
+    const response = `Here are the key predictions for next month:
+        - Revenue: ${predictions.revenue} (+12.5%)
+        - Expected Requests: ${predictions.requests} (+8.3%)
+        - Operational Efficiency: ${predictions.efficiency}
+        - Business Risk: ${predictions.risk}`;
+    
+    addChatMessage('ai', response);
+}
+
+function showEfficiencyReport() {
+    const response = "Department efficiency analysis shows IT at 92%, Finance at 88%, and HR at 85%. " +
+                    "Processing times have improved by 25% this month.";
+    addChatMessage('ai', response);
+    updateEfficiencyChart();
+}
+
+function showRiskAnalysis() {
+    const response = "Current risk assessment: Low. All departments operating within budget. " +
+                    "One alert: IT department purchase requests increased by 40%. Recommend budget review.";
+    addChatMessage('ai', response);
+}
+
+function showVoiceHelp() {
+    const response = "You can use these voice commands:\n" +
+                    "• 'Show revenue analysis' - Display revenue trends\n" +
+                    "• 'Show predictions' - View business predictions\n" +
+                    "• 'Approve all pending' - Bulk approve requests\n" +
+                    "• 'Show efficiency report' - Department performance\n" +
+                    "• 'Risk analysis' - View business risks\n" +
+                    "• Or ask any business question!";
+    addChatMessage('ai', response);
+}
+
+// Process general AI queries
+async function processAIQuery(query) {
+    try {
+        const response = await fetch('/api/ai-query', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query: query })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            addChatMessage('ai', data.response);
+        } else {
+            addChatMessage('ai', "I'm processing your request. Please try again in a moment.");
+        }
+    } catch (error) {
+        addChatMessage('ai', "I understand your request. Let me analyze the business data for you.");
+    }
+}
+
+// Send command from input
+function sendAICommand() {
+    const input = document.getElementById('aiCommandInput');
+    const command = input.value.trim();
+    if (command) {
+        processVoiceCommand(command);
+        input.value = '';
+    }
+}
+
+// Enter key handler
+document.getElementById('aiCommandInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendAICommand();
+    }
+});
+
+// Initialize Charts
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all charts
+    initializeRevenueForecastChart();
+    initializeEfficiencyChart();
+    initializeWorkflowPredictionChart();
+    initializeGaugeCharts();
+    
+    // Set up real-time updates
+    setInterval(updateRealTimeMetrics, 5000);
+    
+    // Initialize feather icons
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+});
+
+// Chart Initialization Functions
+function initializeRevenueForecastChart() {
+    const ctx = document.getElementById('revenueForecastChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Actual Revenue',
+                data: [85000, 92000, 88000, 95000, 98000, 102000, null, null, null, null, null, null],
+                borderColor: '#00D4AA',
+                backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Predicted Revenue',
+                data: [null, null, null, null, null, 102000, 108000, 115000, 118000, 125450, 132000, 138000],
+                borderColor: '#FFB347',
+                backgroundColor: 'rgba(255, 179, 71, 0.1)',
+                borderDash: [5, 5],
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { color: '#B0B0B0' }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        color: '#B0B0B0',
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    },
+                    grid: { color: '#404040' }
+                },
+                x: {
+                    ticks: { color: '#B0B0B0' },
+                    grid: { color: '#404040' }
+                }
+            }
+        }
+    });
+}
+
+function initializeEfficiencyChart() {
+    const ctx = document.getElementById('efficiencyChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Finance', 'HR', 'IT', 'Marketing', 'Operations', 'Sales'],
+            datasets: [{
+                label: 'Current Efficiency',
+                data: [88, 85, 92, 78, 83, 90],
+                backgroundColor: 'rgba(0, 212, 170, 0.2)',
+                borderColor: '#00D4AA',
+                pointBackgroundColor: '#00D4AA'
+            }, {
+                label: 'Target Efficiency',
+                data: [90, 90, 90, 90, 90, 90],
+                backgroundColor: 'rgba(255, 179, 71, 0.1)',
+                borderColor: '#FFB347',
+                pointBackgroundColor: '#FFB347',
+                borderDash: [5, 5]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { color: '#B0B0B0' }
+                }
+            },
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { 
+                        color: '#B0B0B0',
+                        backdropColor: 'transparent'
+                    },
+                    grid: { color: '#404040' },
+                    pointLabels: { color: '#B0B0B0' }
+                }
+            }
+        }
+    });
+}
+
+function initializeWorkflowPredictionChart() {
+    const ctx = document.getElementById('workflowPredictionChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Purchase Requests', 'Cash Demands', 'Expense Records', 'Registrations'],
+            datasets: [{
+                label: 'Current Month',
+                data: [145, 89, 67, 23],
+                backgroundColor: '#00D4AA'
+            }, {
+                label: 'Predicted Next Month',
+                data: [165, 95, 72, 28],
+                backgroundColor: '#FFB347'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { color: '#B0B0B0' }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#B0B0B0' },
+                    grid: { color: '#404040' }
+                },
+                x: {
+                    ticks: { color: '#B0B0B0' },
+                    grid: { color: '#404040' }
+                }
+            }
+        }
+    });
+}
+
+function initializeGaugeCharts() {
+    // Initialize gauge charts for real-time metrics
+    const gaugeOptions = {
+        type: 'doughnut',
+        options: {
+            responsive: false,
+            circumference: 180,
+            rotation: 270,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        }
+    };
+
+    // Approval Rate Gauge
+    new Chart(document.getElementById('approvalRateGauge'), {
+        ...gaugeOptions,
+        data: {
+            datasets: [{
+                data: [87, 13],
+                backgroundColor: ['#00C851', '#404040'],
+                borderWidth: 0
+            }]
+        }
+    });
+
+    // Processing Time Gauge
+    new Chart(document.getElementById('processingTimeGauge'), {
+        ...gaugeOptions,
+        data: {
+            datasets: [{
+                data: [75, 25],
+                backgroundColor: ['#33B5E5', '#404040'],
+                borderWidth: 0
+            }]
+        }
+    });
+
+    // Budget Utilization Gauge
+    new Chart(document.getElementById('utilizationGauge'), {
+        ...gaugeOptions,
+        data: {
+            datasets: [{
+                data: [68, 32],
+                backgroundColor: ['#FFB347', '#404040'],
+                borderWidth: 0
+            }]
+        }
+    });
+
+    // User Satisfaction Gauge
+    new Chart(document.getElementById('satisfactionGauge'), {
+        ...gaugeOptions,
+        data: {
+            datasets: [{
+                data: [92, 8],
+                backgroundColor: ['#00D4AA', '#404040'],
+                borderWidth: 0
+            }]
+        }
+    });
+}
+
+// Real-time updates
+function updateRealTimeMetrics() {
+    // Simulate real-time data updates
+    const predictions = {
+        revenue: Math.floor(125000 + Math.random() * 1000),
+        employees: Math.floor(44 + Math.random() * 3),
+        requests: Math.floor(315 + Math.random() * 10),
+        risk: ['Low', 'Medium'][Math.floor(Math.random() * 2)]
+    };
+
+    document.getElementById('revenuePrediction').textContent = '$' + predictions.revenue.toLocaleString();
+    document.getElementById('employeePrediction').textContent = predictions.employees;
+    document.getElementById('demandPrediction').textContent = predictions.requests;
+    document.getElementById('riskScore').textContent = predictions.risk;
+}
+
+// Update specific charts
+function updateRevenueForecastChart() {
+    // Animation or data update logic
+}
+
+function updateEfficiencyChart() {
+    // Animation or data update logic
+}
+</script>
+{% endblock %}

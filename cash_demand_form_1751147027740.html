@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Cash Demand Request - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h4 class="text-white mb-0">
+                        <i data-feather="dollar-sign" class="me-2"></i>
+                        Cash Demand Request
+                    </h4>
+                    <p class="text-secondary mb-0">Request cash disbursement for business expenses</p>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="floating-label-group">
+                                    {{ form.demander_name(class="form-control workdesk-input", id="demander_name", readonly=true) }}
+                                    <label for="demander_name" class="floating-label">Demander Name *</label>
+                                    {% if form.demander_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.demander_name.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="floating-label-group">
+                                    {{ form.demander_id(class="form-control workdesk-input", id="demander_id", readonly=true) }}
+                                    <label for="demander_id" class="floating-label">Demander ID *</label>
+                                    {% if form.demander_id.errors %}
+                                        <div class="text-danger small mt-1">{{ form.demander_id.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="floating-label-group">
+                                    <input type="datetime-local" class="form-control workdesk-input" id="demand_time" readonly>
+                                    <label for="demand_time" class="floating-label">Demand Time</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-8">
+                                <div class="floating-label-group">
+                                    {{ form.purpose(class="form-control workdesk-input", id="purpose") }}
+                                    <label for="purpose" class="floating-label">Purpose *</label>
+                                    {% if form.purpose.errors %}
+                                        <div class="text-danger small mt-1">{{ form.purpose.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="floating-label-group">
+                                    {{ form.urgency(class="form-select workdesk-input", id="urgency") }}
+                                    <label for="urgency" class="floating-label">Urgency Level</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="floating-label-group">
+                                    {{ form.description(class="form-control workdesk-input", rows="4", id="description") }}
+                                    <label for="description" class="floating-label">Detailed Description *</label>
+                                    <div class="form-text text-secondary">
+                                        Provide detailed information about the cash requirement
+                                    </div>
+                                    {% if form.description.errors %}
+                                        <div class="text-danger small mt-1">{{ form.description.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="floating-label-group">
+                                    {{ form.amount(class="form-control workdesk-input", id="amount", step="0.01", min="0.01") }}
+                                    <label for="amount" class="floating-label">Amount Requested ($) *</label>
+                                    {% if form.amount.errors %}
+                                        <div class="text-danger small mt-1">{{ form.amount.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="floating-label-group">
+                                    {{ form.department(class="form-select workdesk-input", id="department") }}
+                                    <label for="department" class="floating-label">Department</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="floating-label-group">
+                                    {{ form.payment_method(class="form-select workdesk-input", id="payment_method") }}
+                                    <label for="payment_method" class="floating-label">Preferred Payment Method</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert workdesk-alert-info mt-4">
+                            <i data-feather="info" class="me-2"></i>
+                            <strong>Note:</strong> All cash demand requests require admin approval. You will receive notification once your request is reviewed.
+                        </div>
+                        
+                        <div class="card-actions">
+                            <button type="submit" class="btn workdesk-btn-primary">
+                                <i data-feather="send" class="me-2"></i>
+                                Submit Request
+                            </button>
+                            <a href="{{ url_for('index') }}" class="btn workdesk-btn-outline">
+                                <i data-feather="x" class="me-2"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set current date and time for demand time
+    document.addEventListener('DOMContentLoaded', function() {
+        const now = new Date();
+        const currentDateTime = now.toISOString().slice(0, 16);
+        document.getElementById('demand_time').value = currentDateTime;
+    });
+    
+    // Format amount input
+    const amountInput = document.getElementById('amount');
+    
+    amountInput.addEventListener('input', function() {
+        let value = this.value;
+        if (value && !isNaN(value)) {
+            this.value = parseFloat(value).toFixed(2);
+        }
+    });
+    
+    // Replace feather icons
+    feather.replace();
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center mb-4">🔔 Notification Center</h2>
+
+  <div id="notifications">
+    <div class="alert alert-warning alert-dismissible fade show bounce-in" role="alert">
+      ⏰ <strong>Timesheet Reminder:</strong> Please submit your log for today.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div class="alert alert-success alert-dismissible fade show bounce-in" role="alert">
+      💵 <strong>Expense Approved:</strong> Project A - SAR 3,200 has been reimbursed.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show bounce-in" role="alert">
+      🚨 <strong>Urgent:</strong> Cash demand from site Alpha pending over 48 hours.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  </div>
+</div>
+
+<style>
+.bounce-in {
+  animation: bounceIn 0.8s ease;
+}
+@keyframes bounceIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+</style>
+{% endblock %}

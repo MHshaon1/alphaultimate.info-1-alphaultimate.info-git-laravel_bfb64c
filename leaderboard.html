@@ -1,0 +1,62 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">🏆 Gamified Productivity Leaderboard</h2>
+  <ul class="nav nav-tabs mb-3" id="leaderboardTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="individual-tab" data-bs-toggle="tab" data-bs-target="#individual" type="button">Individual</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="team-tab" data-bs-toggle="tab" data-bs-target="#team" type="button">Team</button>
+    </li>
+  </ul>
+  <div class="tab-content" id="leaderboardTabsContent">
+    <div class="tab-pane fade show active" id="individual" role="tabpanel">
+      <div class="text-center mb-4">
+        <h4>Top Performers</h4>
+        <div class="d-flex justify-content-center gap-5">
+          <div class="podium" style="animation: float 2s infinite ease-in-out;">
+            🥈<br><strong>User 2</strong><br>XP: 1800
+          </div>
+          <div class="podium" style="animation: float 3s infinite ease-in-out;">
+            🥇<br><strong>User 1</strong><br>XP: 2200
+          </div>
+          <div class="podium" style="animation: float 2.5s infinite ease-in-out;">
+            🥉<br><strong>User 3</strong><br>XP: 1600
+          </div>
+        </div>
+      </div>
+      <table class="table table-striped">
+        <thead><tr><th>Rank</th><th>Name</th><th>XP</th><th>Level</th><th>Badges</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>User 1</td><td>2200</td><td>5</td><td>🔥 Streak, 💼 Pro</td></tr>
+          <tr><td>2</td><td>User 2</td><td>1800</td><td>4</td><td>🎯 Focus</td></tr>
+          <tr><td>3</td><td>User 3</td><td>1600</td><td>4</td><td>🌟 Rising</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-pane fade" id="team" role="tabpanel">
+      <table class="table table-bordered">
+        <thead><tr><th>Rank</th><th>Team</th><th>Total XP</th><th>Avg. Level</th><th>Members</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Team Alpha</td><td>5000</td><td>4.2</td><td>5</td></tr>
+          <tr><td>2</td><td>Team Bravo</td><td>4200</td><td>3.8</td><td>6</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.podium {
+  font-size: 1.2em;
+  text-align: center;
+  width: 120px;
+}
+</style>
+{% endblock %}

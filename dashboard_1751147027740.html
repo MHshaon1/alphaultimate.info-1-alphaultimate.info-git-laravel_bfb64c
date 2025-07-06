@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="text-white mb-1">
+                    <i data-feather="bar-chart-2" class="me-2"></i>
+                    Analytics Dashboard
+                </h2>
+                <p class="text-secondary mb-0">
+                    {% if user.is_admin %}
+                        Overview of all business operations and workflows
+                    {% else %}
+                        Your personal workflow overview and statistics
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-auto">
+                <div class="dashboard-date">
+                    <span class="text-secondary">Last updated: </span>
+                    <span class="text-white" id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Key Metrics -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="metric-card metric-primary">
+                <div class="metric-icon">
+                    <i data-feather="shopping-cart"></i>
+                </div>
+                <div class="metric-content">
+                    <h3 class="metric-value">${{ "%.0f"|format(stats.total_purchase_amount) }}</h3>
+                    <p class="metric-label">Total Purchase Value</p>
+                    <div class="metric-change">
+                        <span class="metric-count">{{ stats.total_purchases }} requests</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="metric-card metric-success">
+                <div class="metric-icon">
+                    <i data-feather="dollar-sign"></i>
+                </div>
+                <div class="metric-content">
+                    <h3 class="metric-value">${{ "%.0f"|format(stats.total_demand_amount) }}</h3>
+                    <p class="metric-label">Total Cash Demands</p>
+                    <div class="metric-change">
+                        <span class="metric-count">{{ stats.total_demands }} requests</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="metric-card metric-warning">
+                <div class="metric-icon">
+                    <i data-feather="clock"></i>
+                </div>
+                <div class="metric-content">
+                    <h3 class="metric-value">{{ stats.pending_purchases + stats.pending_demands }}</h3>
+                    <p class="metric-label">Pending Approvals</p>
+                    <div class="metric-change">
+                        <span class="metric-count">{{ stats.pending_purchases }} purchases, {{ stats.pending_demands }} demands</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="metric-card metric-info">
+                <div class="metric-icon">
+                    <i data-feather="users"></i>
+                </div>
+                <div class="metric-content">
+                    <h3 class="metric-value">{{ stats.total_registrations }}</h3>
+                    <p class="metric-label">
+                        {% if user.is_admin %}Employee Registrations{% else %}Your Registrations{% endif %}
+                    </p>
+                    <div class="metric-change">
+                        <span class="metric-count">{{ stats.pending_registrations }} pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">Monthly Request Trends</h5>
+                    <p class="text-secondary small mb-0">Track request volumes and spending over time</p>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyTrendsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">Request Status Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusDistributionChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Additional Analytics -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">Department Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="departmentChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="activity-feed">
+                        <div class="activity-item">
+                            <div class="activity-icon status-pending">
+                                <i data-feather="clock"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-text">{{ stats.pending_purchases + stats.pending_demands }} requests awaiting approval</p>
+                                <span class="activity-time">Just now</span>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon status-approved">
+                                <i data-feather="check-circle"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-text">
+                                    Total approved value: ${{ "%.0f"|format(stats.total_purchase_amount + stats.total_demand_amount) }}
+                                </p>
+                                <span class="activity-time">This month</span>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon status-info">
+                                <i data-feather="trending-up"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-text">{{ stats.total_purchases + stats.total_demands }} total requests processed</p>
+                                <span class="activity-time">All time</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+    // Set current date
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Initialize dashboard with stats
+    const dashboardStats = {{ stats|tojson }};
+    initializeDashboard(dashboardStats);
+    
+    // Load chart data
+    fetch('/api/dashboard-data')
+        .then(response => response.json())
+        .then(data => {
+            updateCharts(data);
+        })
+        .catch(error => {
+            console.error('Error loading dashboard data:', error);
+        });
+    
+    // Replace feather icons
+    feather.replace();
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Request - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h4 class="text-white mb-0">
+                        <i data-feather="shopping-cart" class="me-2"></i>
+                        Business Purchase Request
+                    </h4>
+                    <p class="text-secondary mb-0">Submit a request for business purchases requiring approval</p>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="floating-label-group">
+                                    {{ form.item_name(class="form-control workdesk-input", id="item_name") }}
+                                    <label for="item_name" class="floating-label">Item Name *</label>
+                                    {% if form.item_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.item_name.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="floating-label-group">
+                                    {{ form.urgency(class="form-select workdesk-input", id="urgency") }}
+                                    <label for="urgency" class="floating-label">Urgency Level</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="floating-label-group">
+                                    {{ form.description(class="form-control workdesk-input", rows="3", id="description") }}
+                                    <label for="description" class="floating-label">Description</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="floating-label-group">
+                                    {{ form.quantity(class="form-control workdesk-input", id="quantity", min="1") }}
+                                    <label for="quantity" class="floating-label">Quantity *</label>
+                                    {% if form.quantity.errors %}
+                                        <div class="text-danger small mt-1">{{ form.quantity.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="floating-label-group">
+                                    {{ form.unit_price(class="form-control workdesk-input", id="unit_price", step="0.01", min="0.01") }}
+                                    <label for="unit_price" class="floating-label">Unit Price ($) *</label>
+                                    {% if form.unit_price.errors %}
+                                        <div class="text-danger small mt-1">{{ form.unit_price.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="floating-label-group">
+                                    <input type="text" class="form-control workdesk-input" id="total_amount" readonly>
+                                    <label for="total_amount" class="floating-label">Total Amount ($)</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="floating-label-group">
+                                    {{ form.supplier(class="form-control workdesk-input", id="supplier") }}
+                                    <label for="supplier" class="floating-label">Supplier/Vendor</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="floating-label-group">
+                                    {{ form.justification(class="form-control workdesk-input", rows="4", id="justification") }}
+                                    <label for="justification" class="floating-label">Business Justification *</label>
+                                    <div class="form-text text-secondary">
+                                        Explain why this purchase is necessary for business operations
+                                    </div>
+                                    {% if form.justification.errors %}
+                                        <div class="text-danger small mt-1">{{ form.justification.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <button type="submit" class="btn workdesk-btn-primary">
+                                <i data-feather="send" class="me-2"></i>
+                                Submit Request
+                            </button>
+                            <a href="{{ url_for('index') }}" class="btn workdesk-btn-outline">
+                                <i data-feather="x" class="me-2"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Calculate total amount automatically
+    const quantityInput = document.getElementById('quantity');
+    const unitPriceInput = document.getElementById('unit_price');
+    const totalAmountInput = document.getElementById('total_amount');
+    
+    function calculateTotal() {
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const unitPrice = parseFloat(unitPriceInput.value) || 0;
+        const total = quantity * unitPrice;
+        totalAmountInput.value = total.toFixed(2);
+    }
+    
+    quantityInput.addEventListener('input', calculateTotal);
+    unitPriceInput.addEventListener('input', calculateTotal);
+    
+    // Initialize calculation
+    calculateTotal();
+    
+    // Replace feather icons
+    feather.replace();
+</script>
+{% endblock %}

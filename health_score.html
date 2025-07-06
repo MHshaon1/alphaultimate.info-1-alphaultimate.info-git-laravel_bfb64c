@@ -1,0 +1,64 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">📈 Project Health Score Dashboard</h2>
+  <div class="row text-center">
+    {% for metric in ['Schedule', 'Budget', 'Quality', 'Safety', 'Team', 'Client'] %}
+    <div class="col-md-4 mb-4">
+      <canvas id="{{ metric | lower }}Chart" width="150" height="150"></canvas>
+      <h5 class="mt-2">{{ metric }}</h5>
+    </div>
+    {% endfor %}
+  </div>
+  <hr>
+  <div class="mt-4">
+    <h4>🤖 AI Recommendations</h4>
+    <ul>
+      <li>Improve safety training to reduce risks on-site.</li>
+      <li>Monitor upcoming budget overruns on Project A.</li>
+      <li>Client feedback suggests improving communication.</li>
+    </ul>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function generateChart(id, value) {
+  new Chart(document.getElementById(id), {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [value, 100 - value],
+        backgroundColor: value > 75 ? ['#4caf50', '#e0e0e0'] :
+                         value > 50 ? ['#ffeb3b', '#e0e0e0'] :
+                                      ['#f44336', '#e0e0e0'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      cutout: '75%',
+      plugins: {
+        tooltip: { enabled: false },
+        legend: { display: false },
+        title: {
+          display: true,
+          text: value + '%',
+          position: 'center',
+          color: '#333',
+          font: { size: 16 }
+        }
+      }
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const metrics = ['schedule', 'budget', 'quality', 'safety', 'team', 'client'];
+  metrics.forEach(m => {
+    const randomValue = Math.floor(50 + Math.random() * 50);
+    generateChart(m + 'Chart', randomValue);
+  });
+});
+</script>
+{% endblock %}

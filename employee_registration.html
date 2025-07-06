@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Registration - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i data-feather="user-plus" class="me-2"></i>Employee Registration
+                    </h4>
+                    <p class="text-muted mb-0 mt-2">Please fill out all required information for new employee registration</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i data-feather="user" class="me-2"></i>Personal Information
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.first_name.label(class="form-label") }}
+                                        {{ form.first_name(class="form-control") }}
+                                        {% if form.first_name.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.first_name.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.last_name.label(class="form-label") }}
+                                        {{ form.last_name(class="form-control") }}
+                                        {% if form.last_name.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.last_name.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.email.label(class="form-label") }}
+                                        {{ form.email(class="form-control") }}
+                                        {% if form.email.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.email.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.phone.label(class="form-label") }}
+                                        {{ form.phone(class="form-control") }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.employee_id.label(class="form-label") }}
+                                        {{ form.employee_id(class="form-control", placeholder="Optional - will be assigned if empty") }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.id_number.label(class="form-label") }}
+                                        {{ form.id_number(class="form-control", placeholder="National ID/SSN") }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Employment Information -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i data-feather="briefcase" class="me-2"></i>Employment Information
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.department.label(class="form-label") }}
+                                        {{ form.department(class="form-select") }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.position.label(class="form-label") }}
+                                        {{ form.position(class="form-control") }}
+                                        {% if form.position.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.position.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.start_date.label(class="form-label") }}
+                                        {{ form.start_date(class="form-control") }}
+                                        {% if form.start_date.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.start_date.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.salary.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            {{ form.salary(class="form-control", step="0.01", placeholder="Annual salary (optional)") }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Document Upload -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i data-feather="upload" class="me-2"></i>Document Upload
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.photo.label(class="form-label") }}
+                                        {{ form.photo(class="form-control") }}
+                                        <small class="text-muted">Upload employee photo (JPG, PNG only)</small>
+                                        {% if form.photo.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.photo.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form.id_photo.label(class="form-label") }}
+                                        {{ form.id_photo(class="form-control") }}
+                                        <small class="text-muted">Upload ID document photo (JPG, PNG only)</small>
+                                        {% if form.id_photo.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.id_photo.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ form.other_files.label(class="form-label") }}
+                                {{ form.other_files(class="form-control") }}
+                                <small class="text-muted">Upload additional documents (Resume, certificates, etc. - PDF, DOC, DOCX, JPG, PNG)</small>
+                                {% if form.other_files.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.other_files.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- File Upload Guidelines -->
+                        <div class="alert alert-info mb-4">
+                            <h6 class="alert-heading">
+                                <i data-feather="info" class="me-2"></i>File Upload Guidelines
+                            </h6>
+                            <ul class="mb-0">
+                                <li>Maximum file size: 16MB per file</li>
+                                <li>Accepted image formats: JPG, PNG</li>
+                                <li>Accepted document formats: PDF, DOC, DOCX</li>
+                                <li>Ensure all documents are clear and readable</li>
+                                <li>Personal photo should be professional headshot</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                                <i data-feather="arrow-left" class="me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i data-feather="send" class="me-2"></i>Submit Registration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Information Card -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i data-feather="help-circle" class="me-2"></i>What happens next?
+                    </h6>
+                    <p class="card-text text-muted mb-0">
+                        Your registration will be reviewed by HR administrators. You will receive notification once your application is processed. 
+                        If approved, you will receive login credentials to access the system.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Set minimum date to today for start date
+document.addEventListener('DOMContentLoaded', function() {
+    const startDateInput = document.getElementById('start_date');
+    if (startDateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        startDateInput.setAttribute('min', today);
+    }
+});
+
+// File upload preview functionality
+function setupFilePreview() {
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function(e) {
+            const files = e.target.files;
+            const feedback = input.parentNode.querySelector('.file-feedback') || 
+                           input.parentNode.appendChild(document.createElement('div'));
+            feedback.className = 'file-feedback mt-1';
+            
+            if (files.length > 0) {
+                if (input.multiple) {
+                    feedback.innerHTML = `<small class="text-success"><i data-feather="check"></i> ${files.length} file(s) selected</small>`;
+                } else {
+                    feedback.innerHTML = `<small class="text-success"><i data-feather="check"></i> ${files[0].name}</small>`;
+                }
+                feather.replace();
+            } else {
+                feedback.innerHTML = '';
+            }
+        });
+    });
+}
+
+setupFilePreview();
+</script>
+{% endblock %}

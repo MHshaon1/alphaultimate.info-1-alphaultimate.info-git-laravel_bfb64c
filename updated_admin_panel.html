@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Admin Panel</h1>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary me-2">
+                <i data-feather="home" class="me-2"></i>Dashboard
+            </a>
+            <a href="{{ url_for('admin_reports') }}" class="btn btn-primary">
+                <i data-feather="file-text" class="me-2"></i>Reports
+            </a>
+        </div>
+    </div>
+
+    <!-- Service Status -->
+    {% if service_status or setup_messages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Service Status</h5>
+                </div>
+                <div class="card-body">
+                    {% if service_status %}
+                        <div class="row">
+                            {% for service, status in service_status.items() %}
+                            <div class="col-md-6 mb-2">
+                                <span class="badge bg-{{ 'success' if status else 'warning' }} me-2">
+                                    {{ 'Connected' if status else 'Disconnected' }}
+                                </span>
+                                {{ service }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if setup_messages %}
+                        <div class="alert alert-info mt-3">
+                            {{ setup_messages }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- AI Insights -->
+    {% if ai_insights %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">AI Insights</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ ai_insights }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Pending Requests Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="purchases-tab" data-bs-toggle="tab" data-bs-target="#purchases" type="button" role="tab">
+                                Purchase Requests ({{ purchases|length }})
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="demands-tab" data-bs-toggle="tab" data-bs-target="#demands" type="button" role="tab">
+                                Cash Demands ({{ demands|length }})
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="registrations-tab" data-bs-toggle="tab" data-bs-target="#registrations" type="button" role="tab">
+                                Employee Registrations ({{ registrations|length }})
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button" role="tab">
+                                Expense Records ({{ expenses|length }})
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="adminTabsContent">
+                        <!-- Purchase Requests -->
+                        <div class="tab-pane fade show active" id="purchases" role="tabpanel">
+                            {% if purchases %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>User</th>
+                                                <th>Amount</th>
+                                                <th>Urgency</th>
+                                                <th>Submitted</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for purchase in purchases %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ purchase.item_name }}</strong>
+                                                    <br><small class="text-muted">{{ purchase.description[:50] }}{% if purchase.description|length > 50 %}...{% endif %}</small>
+                                                </td>
+                                                <td>{{ purchase.user.username }}</td>
+                                                <td>${{ "%.2f"|format(purchase.total_amount) }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ 'danger' if purchase.urgency == 'Critical' else 'warning' if purchase.urgency == 'High' else 'info' if purchase.urgency == 'Normal' else 'secondary' }}">
+                                                        {{ purchase.urgency }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ purchase.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-success me-1" onclick="approveRequest('purchase', {{ purchase.id }}, 'Approved')">
+                                                        <i data-feather="check"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-danger" onclick="approveRequest('purchase', {{ purchase.id }}, 'Rejected')">
+                                                        <i data-feather="x"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No pending purchase requests</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Cash Demands -->
+                        <div class="tab-pane fade" id="demands" role="tabpanel">
+                            {% if demands %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Purpose</th>
+                                                <th>Demander</th>
+                                                <th>Amount</th>
+                                                <th>Department</th>
+                                                <th>Submitted</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for demand in demands %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ demand.purpose }}</strong>
+                                                    <br><small class="text-muted">{{ demand.description[:50] }}{% if demand.description|length > 50 %}...{% endif %}</small>
+                                                </td>
+                                                <td>{{ demand.demander_name }}</td>
+                                                <td>${{ "%.2f"|format(demand.amount) }}</td>
+                                                <td>{{ demand.department }}</td>
+                                                <td>{{ demand.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-success me-1" onclick="approveRequest('demand', {{ demand.id }}, 'Approved')">
+                                                        <i data-feather="check"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-danger" onclick="approveRequest('demand', {{ demand.id }}, 'Rejected')">
+                                                        <i data-feather="x"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No pending cash demands</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Employee Registrations -->
+                        <div class="tab-pane fade" id="registrations" role="tabpanel">
+                            {% if registrations %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Position</th>
+                                                <th>Department</th>
+                                                <th>Start Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for registration in registrations %}
+                                            <tr>
+                                                <td>{{ registration.first_name }} {{ registration.last_name }}</td>
+                                                <td>{{ registration.email }}</td>
+                                                <td>{{ registration.position }}</td>
+                                                <td>{{ registration.department }}</td>
+                                                <td>{{ registration.start_date.strftime('%Y-%m-%d') }}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-success me-1" onclick="approveRequest('registration', {{ registration.id }}, 'Approved')">
+                                                        <i data-feather="check"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-danger" onclick="approveRequest('registration', {{ registration.id }}, 'Rejected')">
+                                                        <i data-feather="x"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No pending employee registrations</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Expense Records -->
+                        <div class="tab-pane fade" id="expenses" role="tabpanel">
+                            {% if expenses %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Expense ID</th>
+                                                <th>User</th>
+                                                <th>Department</th>
+                                                <th>Submitted</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for expense in expenses %}
+                                            <tr>
+                                                <td>{{ expense.expense_id }}</td>
+                                                <td>{{ expense.user.username }}</td>
+                                                <td>{{ expense.department }}</td>
+                                                <td>{{ expense.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-success me-1" onclick="approveRequest('expense', {{ expense.id }}, 'Approved')">
+                                                        <i data-feather="check"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-danger" onclick="approveRequest('expense', {{ expense.id }}, 'Rejected')">
+                                                        <i data-feather="x"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No pending expense records</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approval Modal -->
+<div class="modal fade" id="approvalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Request Approval</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="approvalForm" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="status" id="approvalStatus">
+                    <div class="mb-3">
+                        <label for="admin_notes" class="form-label">Admin Notes</label>
+                        <textarea class="form-control" name="admin_notes" id="admin_notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Decision</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function approveRequest(type, id, status) {
+    document.getElementById('approvalStatus').value = status;
+    document.getElementById('approvalForm').action = `/approve/${type}/${id}`;
+    
+    const modal = new bootstrap.Modal(document.getElementById('approvalModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

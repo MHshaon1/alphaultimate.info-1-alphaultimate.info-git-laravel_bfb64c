@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Expense Record - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i data-feather="file-text" class="me-2"></i>New Expense Record
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.expense_id.label(class="form-label") }}
+                                {{ form.expense_id(class="form-control") }}
+                                {% for error in form.expense_id.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.department.label(class="form-label") }}
+                                {{ form.department(class="form-select") }}
+                                {% for error in form.department.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3">Expense Items</h5>
+                        
+                        <div id="expense-items">
+                            <!-- Expense items will be added here dynamically -->
+                            <div class="expense-item border rounded p-3 mb-3">
+                                <h6 class="text-primary">Item 1</h6>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Description</label>
+                                        <input type="text" class="form-control" name="item_1_description" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Purpose</label>
+                                        <input type="text" class="form-control" name="item_1_purpose">
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Quantity</label>
+                                        <input type="number" class="form-control" name="item_1_quantity" value="1" min="1">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Rate</label>
+                                        <input type="number" class="form-control" name="item_1_rate" step="0.01" min="0">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Voucher/Receipt</label>
+                                        <input type="file" class="form-control" name="item_1_voucher" accept=".pdf,.jpg,.jpeg,.png">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-outline-primary mb-4" onclick="addExpenseItem()">
+                            <i data-feather="plus" class="me-2"></i>Add Another Item
+                        </button>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                                <i data-feather="arrow-left" class="me-2"></i>Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i data-feather="send" class="me-2"></i>Submit Expense Record
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let itemCount = 1;
+
+function addExpenseItem() {
+    itemCount++;
+    const container = document.getElementById('expense-items');
+    const newItem = document.createElement('div');
+    newItem.className = 'expense-item border rounded p-3 mb-3';
+    newItem.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="text-primary mb-0">Item ${itemCount}</h6>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeExpenseItem(this)">
+                <i data-feather="trash-2"></i> Remove
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-control" name="item_${itemCount}_description">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Purpose</label>
+                <input type="text" class="form-control" name="item_${itemCount}_purpose">
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Quantity</label>
+                <input type="number" class="form-control" name="item_${itemCount}_quantity" value="1" min="1">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Rate</label>
+                <input type="number" class="form-control" name="item_${itemCount}_rate" step="0.01" min="0">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Voucher/Receipt</label>
+                <input type="file" class="form-control" name="item_${itemCount}_voucher" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+        </div>
+    `;
+    container.appendChild(newItem);
+    feather.replace();
+}
+
+function removeExpenseItem(button) {
+    button.closest('.expense-item').remove();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alpha Ultimate Workdesk{% endblock %}</title>
+    
+    <!-- Optimized CSS Loading -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://unpkg.com/feather-icons" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/chart.js" as="script">
+    
+    <!-- Deferred JS Loading -->
+    <script src="https://unpkg.com/feather-icons" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark workdesk-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                <i data-feather="layers" class="me-2"></i>
+                Alpha Ultimate Workdesk
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if session.user_id %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i data-feather="bar-chart-2" class="me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i data-feather="file-plus" class="me-1"></i>
+                            Submit Request
+                        </a>
+                        <ul class="dropdown-menu workdesk-dropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('purchase_request') }}">
+                                <i data-feather="shopping-cart" class="me-2"></i>
+                                Purchase Request
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('cash_demand') }}">
+                                <i data-feather="dollar-sign" class="me-2"></i>
+                                Cash Demand
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('expense_record') }}">
+                                <i data-feather="receipt" class="me-2"></i>
+                                Expense Record
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('my_submissions') }}">
+                            <i data-feather="folder" class="me-1"></i>
+                            My Submissions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('reports_page') }}">
+                            <i data-feather="file-text" class="me-1"></i>
+                            Reports
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('employee_registration') }}">
+                            <i data-feather="user-plus" class="me-1"></i>
+                            Employee Registration
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if session.user_id %}
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" href="{{ url_for('admin_panel') }}">
+                                <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Admin" class="me-1" style="width: 20px; height: 20px;">
+                                Admin Panel
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i data-feather="log-out" class="me-1"></i>
+                                Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i data-feather="log-in" class="me-1"></i>
+                                Login
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container-fluid mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="workdesk-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Initialize Feather Icons -->
+    <script>
+        feather.replace();
+        
+        // Admin Panel Keyboard Shortcut: Tab Tab X
+        let keySequence = [];
+        let sequenceTimeout;
+        
+        document.addEventListener('keydown', function(e) {
+            // Reset sequence on any non-tab/x key
+            if (e.key !== 'Tab' && e.key.toLowerCase() !== 'x') {
+                keySequence = [];
+                return;
+            }
+            
+            // Prevent default tab behavior for our sequence
+            if (e.key === 'Tab' && keySequence.length < 2) {
+                e.preventDefault();
+            }
+            
+            keySequence.push(e.key);
+            
+            // Clear timeout if exists
+            if (sequenceTimeout) {
+                clearTimeout(sequenceTimeout);
+            }
+            
+            // Check if sequence matches: Tab Tab X
+            if (keySequence.length === 3) {
+                if (keySequence[0] === 'Tab' && keySequence[1] === 'Tab' && keySequence[2].toLowerCase() === 'x') {
+                    showAdminSignup();
+                }
+                keySequence = [];
+            } else {
+                // Reset sequence after 2 seconds
+                sequenceTimeout = setTimeout(() => {
+                    keySequence = [];
+                }, 2000);
+            }
+        });
+        
+        function showAdminSignup() {
+            // Create admin signup modal
+            const modalHtml = `
+                <div class="modal fade" id="adminSignupModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content workdesk-modal">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title text-white">Admin Access</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="adminLoginForm">
+                                    <div class="mb-3">
+                                        <label class="form-label text-secondary">Admin ID</label>
+                                        <input type="text" id="adminId" class="form-control workdesk-input" value="MShaonH" readonly>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label text-secondary">Password</label>
+                                        <input type="password" id="adminPassword" class="form-control workdesk-input" placeholder="Enter password">
+                                    </div>
+                                    <button type="submit" class="btn workdesk-btn-primary w-100">
+                                        <i data-feather="shield" class="me-2"></i>
+                                        Access Admin Panel
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('adminSignupModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('adminSignupModal'));
+            modal.show();
+            
+            // Focus password field
+            setTimeout(() => {
+                document.getElementById('adminPassword').focus();
+                feather.replace(); // Refresh icons
+            }, 300);
+            
+            // Handle form submission
+            document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const password = document.getElementById('adminPassword').value;
+                
+                // Send password to server for verification
+                fetch('/verify-admin-access', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'password=' + encodeURIComponent(password)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.valid) {
+                        createAdminUser();
+                    } else {
+                        alert('Access denied. Invalid password.');
+                        document.getElementById('adminPassword').value = '';
+                        document.getElementById('adminPassword').focus();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Authentication error. Please try again.');
+                });
+            });
+            
+            // Handle Enter key on password field
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('adminLoginForm').dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+        
+        function createAdminUser() {
+            // Create admin user with specified credentials
+            fetch('/create-admin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'username=MShaonH&email=admin@workdesk.com&password=BadSoul@1989&phone='
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Auto-login the admin user
+                return fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'username=MShaonH&password=BadSoul@1989'
+                });
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Close modal and redirect to admin panel
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('adminSignupModal'));
+                    modal.hide();
+                    window.location.href = '/admin';
+                } else {
+                    alert('Login failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,36 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h3>📅 Submit Timesheet</h3>
+  <form method="POST" action="/submit/timesheet">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.project.label }} {{ form.project(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.hours.label }} {{ form.hours(class="form-control") }}
+    </div>
+    <!-- GPS Fields -->
+    {{ form.latitude }}
+    {{ form.longitude }}
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      document.getElementById("latitude").value = position.coords.latitude;
+      document.getElementById("longitude").value = position.coords.longitude;
+    }, function(error) {
+      console.warn("GPS error:", error.message);
+    });
+  } else {
+    console.warn("Geolocation not supported.");
+  }
+});
+</script>
+{% endblock %}

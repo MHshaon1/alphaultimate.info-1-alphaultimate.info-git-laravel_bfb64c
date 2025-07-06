@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="admin-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="text-white">
+                    <i data-feather="shield" class="me-2"></i>
+                    Admin Panel
+                </h2>
+                <p class="text-secondary">Manage and review all pending requests</p>
+            </div>
+            <a href="{{ url_for('admin_settings') }}" class="btn btn-outline-light">
+                <i data-feather="settings" class="me-1"></i>
+                Settings
+            </a>
+        </div>
+    </div>
+
+    <!-- Service Status Alerts -->
+    {% if setup_messages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <h6 class="alert-heading">
+                    <i data-feather="alert-triangle" class="me-2"></i>
+                    Service Configuration Required
+                </h6>
+                {% for message in setup_messages %}
+                    <p class="mb-1">{{ message }}</p>
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card stat-card-warning">
+                <div class="stat-icon">
+                    <i data-feather="shopping-cart"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ purchases|selectattr('status', 'equalto', 'Pending')|list|length }}</h3>
+                    <p>Pending Purchase Requests</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card-info">
+                <div class="stat-icon">
+                    <i data-feather="dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ demands|selectattr('status', 'equalto', 'Pending')|list|length }}</h3>
+                    <p>Pending Cash Demands</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card-success">
+                <div class="stat-icon">
+                    <i data-feather="user-plus"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ registrations|selectattr('status', 'equalto', 'Pending')|list|length }}</h3>
+                    <p>Pending Registrations</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card-danger">
+                <div class="stat-icon">
+                    <i data-feather="receipt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ expenses|selectattr('status', 'equalto', 'Pending')|list|length }}</h3>
+                    <p>Pending Expenses</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Insights Panel -->
+    {% if ai_insights %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card workdesk-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="brain" class="me-2"></i>
+                        AI Expense Analysis Insights
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="ai-insights-content">
+                        {{ ai_insights|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Tabs for different request types -->
+    <div class="workdesk-card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="purchases-tab" data-bs-toggle="tab" data-bs-target="#purchases" type="button" role="tab">
+                        <i data-feather="shopping-cart" class="me-2"></i>
+                        Purchase Requests ({{ purchases|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="demands-tab" data-bs-toggle="tab" data-bs-target="#demands" type="button" role="tab">
+                        <i data-feather="dollar-sign" class="me-2"></i>
+                        Cash Demands ({{ demands|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="registrations-tab" data-bs-toggle="tab" data-bs-target="#registrations" type="button" role="tab">
+                        <i data-feather="user-plus" class="me-2"></i>
+                        Employee Registrations ({{ registrations|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button" role="tab">
+                        <i data-feather="receipt" class="me-2"></i>
+                        Expense Records ({{ expenses|length }})
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card-body">
+            <div class="tab-content" id="adminTabsContent">
+                <!-- Purchase Requests -->
+                <div class="tab-pane fade show active" id="purchases" role="tabpanel">
+                    {% if purchases %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Requested By</th>
+                                        <th>Amount</th>
+                                        <th>Urgency</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for purchase in purchases %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ purchase.item_name }}</strong><br>
+                                            <small class="text-secondary">Qty: {{ purchase.quantity }} @ ${{ "%.2f"|format(purchase.unit_price) }}</small>
+                                        </td>
+                                        <td>{{ purchase.user.username }}</td>
+                                        <td>${{ "%.2f"|format(purchase.total_amount) }}</td>
+                                        <td>
+                                            <span class="badge urgency-{{ purchase.urgency.lower() }}">
+                                                {{ purchase.urgency }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge status-{{ purchase.status.lower() }}">
+                                                {{ purchase.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ purchase.submitted_at.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            <button class="btn btn-sm workdesk-btn-outline" onclick="viewRequest('purchase', {{ purchase.id }})">
+                                                <i data-feather="eye"></i>
+                                            </button>
+                                            {% if purchase.status == 'Pending' %}
+                                            <button class="btn btn-sm workdesk-btn-primary" onclick="reviewRequest('purchase', {{ purchase.id }})">
+                                                <i data-feather="edit-3"></i>
+                                            </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="shopping-cart" class="empty-state-icon"></i>
+                            <h5>No Purchase Requests</h5>
+                            <p class="text-secondary">No purchase requests have been submitted yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Cash Demands -->
+                <div class="tab-pane fade" id="demands" role="tabpanel">
+                    {% if demands %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Purpose</th>
+                                        <th>Requested By</th>
+                                        <th>Amount</th>
+                                        <th>Department</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for demand in demands %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ demand.purpose }}</strong><br>
+                                            <small class="text-secondary">{{ demand.payment_method }}</small>
+                                        </td>
+                                        <td>{{ demand.user.username }}</td>
+                                        <td>${{ "%.2f"|format(demand.amount) }}</td>
+                                        <td>{{ demand.department }}</td>
+                                        <td>
+                                            <span class="badge status-{{ demand.status.lower() }}">
+                                                {{ demand.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ demand.submitted_at.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            <button class="btn btn-sm workdesk-btn-outline" onclick="viewRequest('demand', {{ demand.id }})">
+                                                <i data-feather="eye"></i>
+                                            </button>
+                                            {% if demand.status == 'Pending' %}
+                                            <button class="btn btn-sm workdesk-btn-primary" onclick="reviewRequest('demand', {{ demand.id }})">
+                                                <i data-feather="edit-3"></i>
+                                            </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="dollar-sign" class="empty-state-icon"></i>
+                            <h5>No Cash Demands</h5>
+                            <p class="text-secondary">No cash demand requests have been submitted yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Employee Registrations -->
+                <div class="tab-pane fade" id="registrations" role="tabpanel">
+                    {% if registrations %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Position</th>
+                                        <th>Department</th>
+                                        <th>Start Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for registration in registrations %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ registration.first_name }} {{ registration.last_name }}</strong><br>
+                                            <small class="text-secondary">{{ registration.phone or 'No phone' }}</small>
+                                        </td>
+                                        <td>{{ registration.email }}</td>
+                                        <td>{{ registration.position }}</td>
+                                        <td>{{ registration.department }}</td>
+                                        <td>{{ registration.start_date.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            <span class="badge status-{{ registration.status.lower() }}">
+                                                {{ registration.status }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm workdesk-btn-outline" onclick="viewRequest('registration', {{ registration.id }})">
+                                                <i data-feather="eye"></i>
+                                            </button>
+                                            {% if registration.status == 'Pending' %}
+                                            <button class="btn btn-sm workdesk-btn-primary" onclick="reviewRequest('registration', {{ registration.id }})">
+                                                <i data-feather="edit-3"></i>
+                                            </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="users" class="empty-state-icon"></i>
+                            <h5>No Employee Registrations</h5>
+                            <p class="text-secondary">No employee registration requests have been submitted yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Expense Records -->
+                <div class="tab-pane fade" id="expenses" role="tabpanel">
+                    {% if expenses %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Expense ID</th>
+                                        <th>Submitted By</th>
+                                        <th>Department</th>
+                                        <th>Items</th>
+                                        <th>Total Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for expense in expenses %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ expense.expense_id }}</strong>
+                                        </td>
+                                        <td>{{ expense.user.username }}</td>
+                                        <td>{{ expense.department }}</td>
+                                        <td>{{ expense.expense_items|length }}</td>
+                                        <td>${{ "%.2f"|format(expense.expense_items|sum(attribute='amount')) }}</td>
+                                        <td>
+                                            <span class="badge status-{{ expense.status.lower() }}">
+                                                {{ expense.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ expense.submitted_at.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            <button class="btn btn-sm workdesk-btn-outline" onclick="viewRequest('expense', {{ expense.id }})">
+                                                <i data-feather="eye"></i>
+                                            </button>
+                                            {% if expense.status == 'Pending' %}
+                                            <button class="btn btn-sm workdesk-btn-primary" onclick="reviewRequest('expense', {{ expense.id }})">
+                                                <i data-feather="edit-3"></i>
+                                            </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="receipt" class="empty-state-icon"></i>
+                            <h5>No Expense Records</h5>
+                            <p class="text-secondary">No expense records have been submitted yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content workdesk-modal">
+            <div class="modal-header">
+                <h5 class="modal-title text-white">Review Request</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="reviewModalBody">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function viewRequest(type, id) {
+    // Implementation for viewing request details
+    alert(`View ${type} request #${id}`);
+}
+
+function reviewRequest(type, id) {
+    const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+    const modalBody = document.getElementById('reviewModalBody');
+    
+    // Create review form
+    modalBody.innerHTML = `
+        <form method="POST" action="/admin/approve/${type}/${id}">
+            <input type="hidden" name="csrf_token" value="${document.querySelector('meta[name=csrf-token]')?.content}">
+            
+            <div class="mb-3">
+                <label class="form-label text-secondary">Decision</label>
+                <select name="status" class="form-select workdesk-input" required>
+                    <option value="">Select Decision</option>
+                    <option value="Approved">Approve</option>
+                    <option value="Rejected">Reject</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label text-secondary">Admin Notes</label>
+                <textarea name="admin_notes" class="form-control workdesk-input" rows="4" 
+                          placeholder="Add notes about your decision..."></textarea>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn workdesk-btn-primary">
+                    <i data-feather="check" class="me-2"></i>
+                    Submit Decision
+                </button>
+                <button type="button" class="btn workdesk-btn-outline" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    `;
+    
+    modal.show();
+    feather.replace();
+}
+
+// Replace feather icons
+feather.replace();
+</script>
+{% endblock %}

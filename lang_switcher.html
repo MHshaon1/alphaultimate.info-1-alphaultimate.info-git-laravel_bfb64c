@@ -1,0 +1,9 @@
+
+<div class="text-end">
+  <form method="GET" action="{{ request.path }}">
+    <select name="lang" onchange="this.form.submit()" class="form-select form-select-sm" style="width:auto; display:inline-block;">
+      <option value="en" {% if lang == 'en' %}selected{% endif %}>🇬🇧 English</option>
+      <option value="ar" {% if lang == 'ar' %}selected{% endif %}>🇸🇦 العربية</option>
+    </select>
+  </form>
+</div>

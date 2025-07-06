@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Settings - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i data-feather="settings" class="me-2"></i>
+                    Admin Settings
+                </h1>
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-secondary">
+                    <i data-feather="arrow-left" class="me-1"></i>
+                    Back to Admin Panel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Status Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card workdesk-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="activity" class="me-2"></i>
+                        Service Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                {% if service_status.database_enabled %}
+                                    <span class="badge bg-success me-2">✓</span>
+                                    <span>Database: Connected</span>
+                                {% else %}
+                                    <span class="badge bg-danger me-2">✗</span>
+                                    <span>Database: Not Connected</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                {% if service_status.sms_enabled %}
+                                    <span class="badge bg-success me-2">✓</span>
+                                    <span>SMS Service: Enabled</span>
+                                {% else %}
+                                    <span class="badge bg-warning me-2">!</span>
+                                    <span>SMS Service: Disabled</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                {% if service_status.ai_enabled %}
+                                    <span class="badge bg-success me-2">✓</span>
+                                    <span>AI Assistant: Enabled</span>
+                                {% else %}
+                                    <span class="badge bg-warning me-2">!</span>
+                                    <span>AI Assistant: Disabled</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Instructions -->
+    {% if setup_messages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <h6 class="alert-heading">
+                    <i data-feather="info" class="me-2"></i>
+                    Service Setup Required
+                </h6>
+                {% for message in setup_messages %}
+                    <p class="mb-1">{{ message }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- API Key Configuration -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card workdesk-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="message-circle" class="me-2"></i>
+                        SMS Configuration (Twilio)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if service_status.sms_enabled %}
+                        <div class="alert alert-success" role="alert">
+                            SMS service is properly configured and ready to use.
+                        </div>
+                    {% else %}
+                        <p class="mb-3">Configure Twilio credentials to enable SMS notifications:</p>
+                        <div class="mb-3">
+                            <strong>Required Environment Variables:</strong>
+                            <ul class="mt-2">
+                                <li><code>TWILIO_ACCOUNT_SID</code> - Your Twilio Account SID</li>
+                                <li><code>TWILIO_AUTH_TOKEN</code> - Your Twilio Auth Token</li>
+                                <li><code>TWILIO_PHONE_NUMBER</code> - Your Twilio Phone Number</li>
+                            </ul>
+                        </div>
+                        <div class="alert alert-warning" role="alert">
+                            <strong>How to get Twilio credentials:</strong><br>
+                            1. Sign up at <a href="https://www.twilio.com" target="_blank">twilio.com</a><br>
+                            2. Get a phone number from the Twilio console<br>
+                            3. Find your Account SID and Auth Token in the dashboard<br>
+                            4. Add these as environment variables in your deployment
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card workdesk-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="brain" class="me-2"></i>
+                        AI Assistant Configuration (OpenAI)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if service_status.ai_enabled %}
+                        <div class="alert alert-success" role="alert">
+                            AI Assistant is properly configured and ready to use.
+                        </div>
+                    {% else %}
+                        <p class="mb-3">Configure OpenAI API key to enable AI features:</p>
+                        <div class="mb-3">
+                            <strong>Required Environment Variable:</strong>
+                            <ul class="mt-2">
+                                <li><code>OPENAI_API_KEY</code> - Your OpenAI API Key</li>
+                            </ul>
+                        </div>
+                        <div class="alert alert-warning" role="alert">
+                            <strong>How to get an OpenAI API key:</strong><br>
+                            1. Sign up at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a><br>
+                            2. Navigate to API Keys section<br>
+                            3. Create a new API key<br>
+                            4. Add it as OPENAI_API_KEY environment variable
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Overview -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card workdesk-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="zap" class="me-2"></i>
+                        Available Features
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>SMS Notifications</h6>
+                            <ul>
+                                <li>Admin alerts for new requests</li>
+                                <li>Approval/rejection notifications to users</li>
+                                <li>Configurable phone numbers for admins</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>AI Assistant</h6>
+                            <ul>
+                                <li>Automatic urgency analysis for requests</li>
+                                <li>AI-generated approval notes</li>
+                                <li>Expense pattern analysis and insights</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize feather icons
+    feather.replace();
+</script>
+{% endblock %}

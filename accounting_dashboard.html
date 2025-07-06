@@ -1,0 +1,61 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">💰 Accounting Dashboard</h2>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h5>Budget vs Actual</h5>
+      <canvas id="budgetChart"></canvas>
+    </div>
+    <div class="col-md-6">
+      <h5>Monthly Expense Trend</h5>
+      <canvas id="monthlyChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  fetch("/api/accounting")
+    .then(res => res.json())
+    .then(data => {
+      const categories = data.budget_vs_actual.map(d => d.category);
+      const budget = data.budget_vs_actual.map(d => d.budget);
+      const actual = data.budget_vs_actual.map(d => d.actual);
+
+      new Chart(document.getElementById("budgetChart"), {
+        type: 'bar',
+        data: {
+          labels: categories,
+          datasets: [
+            { label: 'Budget', data: budget, backgroundColor: '#4caf50' },
+            { label: 'Actual', data: actual, backgroundColor: '#f44336' }
+          ]
+        },
+        options: { responsive: true }
+      });
+
+      const months = data.monthly_expense.map(d => d.month);
+      const values = data.monthly_expense.map(d => d.amount);
+      new Chart(document.getElementById("monthlyChart"), {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [{
+            label: 'Expense',
+            data: values,
+            backgroundColor: 'rgba(33,150,243,0.2)',
+            borderColor: '#2196f3',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: { responsive: true }
+      });
+    });
+});
+</script>
+{% endblock %}

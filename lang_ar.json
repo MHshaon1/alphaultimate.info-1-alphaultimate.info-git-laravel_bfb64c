@@ -1,0 +1,22 @@
+{
+  "dashboard": "لوحة التحكم",
+  "login": "تسجيل الدخول",
+  "logout": "تسجيل الخروج",
+  "submit": "إرسال",
+  "timesheet": "الجدول الزمني",
+  "expense": "المصروف",
+  "project_health": "صحة المشروع",
+  "risk_prediction": "توقع المخاطر",
+  "ai_assistant": "المساعد الذكي",
+  "leaderboard": "قائمة المتصدرين",
+  "notifications": "الإشعارات",
+  "upload": "رفع",
+  "gallery": "المعرض",
+  "gantt_chart": "مخطط جانت",
+  "iot_dashboard": "لوحة تحكم إنترنت الأشياء",
+  "vr_viewer": "عارض الواقع الافتراضي",
+  "language": "اللغة",
+  "english": "الإنجليزية",
+  "arabic": "العربية",
+  "bangla": "البنغالية"
+}

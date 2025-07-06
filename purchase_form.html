@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Request - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i data-feather="shopping-cart" class="me-2"></i>Purchase Request
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    {{ form.item_name.label(class="form-label") }}
+                                    {{ form.item_name(class="form-control") }}
+                                    {% if form.item_name.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.item_name.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.urgency.label(class="form-label") }}
+                                    {{ form.urgency(class="form-select") }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.description.label(class="form-label") }}
+                            {{ form.description(class="form-control", rows="3") }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.quantity.label(class="form-label") }}
+                                    {{ form.quantity(class="form-control", id="quantity") }}
+                                    {% if form.quantity.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.quantity.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.unit_price.label(class="form-label") }}
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form.unit_price(class="form-control", id="unitPrice", step="0.01") }}
+                                    </div>
+                                    {% if form.unit_price.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.unit_price.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Total Amount</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="text" class="form-control" id="totalAmount" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.supplier.label(class="form-label") }}
+                            {{ form.supplier(class="form-control") }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.justification.label(class="form-label") }}
+                            {{ form.justification(class="form-control", rows="4", placeholder="Please provide a detailed business justification for this purchase...") }}
+                            {% if form.justification.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.justification.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                                <i data-feather="arrow-left" class="me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-feather="send" class="me-2"></i>Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Calculate total amount automatically
+function calculateTotal() {
+    const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+    const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
+    const total = quantity * unitPrice;
+    document.getElementById('totalAmount').value = total.toFixed(2);
+}
+
+document.getElementById('quantity').addEventListener('input', calculateTotal);
+document.getElementById('unitPrice').addEventListener('input', calculateTotal);
+</script>
+{% endblock %}

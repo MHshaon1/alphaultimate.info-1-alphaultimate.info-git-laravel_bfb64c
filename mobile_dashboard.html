@@ -1,0 +1,14 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4 text-center">
+  <h3>📱 Mobile Companion Dashboard</h3>
+  <p class="text-muted">Touch-friendly and GPS-enabled actions</p>
+
+  <div class="d-grid gap-3 mt-4">
+    <a href="/mobile/timesheet" class="btn btn-primary btn-lg">📅 Submit Timesheet</a>
+    <a href="/mobile/expense" class="btn btn-success btn-lg">💵 Upload Expense</a>
+    <a href="/mobile/cash" class="btn btn-warning btn-lg">💰 Cash Demand Request</a>
+  </div>
+</div>
+{% endblock %}

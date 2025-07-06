@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Expense Record - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i data-feather="file-text" class="me-2"></i>Expense Record Submission
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" id="expenseForm">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.expense_id.label(class="form-label") }}
+                                    {{ form.expense_id(class="form-control", placeholder="e.g., EXP-2025-001") }}
+                                    {% if form.expense_id.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.expense_id.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.department.label(class="form-label") }}
+                                    {{ form.department(class="form-select") }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Expense Items Section -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">
+                                    <i data-feather="list" class="me-2"></i>Expense Items
+                                </h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addExpenseItem()">
+                                    <i data-feather="plus" class="me-1"></i>Add Item
+                                </button>
+                            </div>
+                            
+                            <div id="expenseItems">
+                                <!-- Expense items will be dynamically added here -->
+                            </div>
+                            
+                            <div class="alert alert-info mt-3">
+                                <i data-feather="info" class="me-2"></i>
+                                <strong>Note:</strong> Please add at least one expense item with all required details and supporting vouchers.
+                            </div>
+                        </div>
+                        
+                        <!-- Total Amount Display -->
+                        <div class="row">
+                            <div class="col-md-6 ms-auto">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">Total Amount:</h6>
+                                            <h5 class="mb-0 text-primary" id="totalAmount">$0.00</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                                <i data-feather="arrow-left" class="me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-info">
+                                <i data-feather="send" class="me-2"></i>Submit Expense Record
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Expense Item Template -->
+<template id="expenseItemTemplate">
+    <div class="card mb-3 expense-item">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Expense Item <span class="item-number"></span></h6>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeExpenseItem(this)">
+                    <i data-feather="trash-2"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Description *</label>
+                        <input type="text" class="form-control item-description" placeholder="Enter expense description..." required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Purpose *</label>
+                        <input type="text" class="form-control item-purpose" placeholder="Purpose of expense..." required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Quantity *</label>
+                        <input type="number" class="form-control item-quantity" min="1" value="1" required>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Rate *</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control item-rate" step="0.01" min="0.01" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" class="form-control item-amount" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Voucher</label>
+                        <input type="file" class="form-control item-voucher" accept=".pdf,.jpg,.jpeg,.png">
+                        <small class="text-muted">PDF, JPG, PNG only</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let itemCounter = 0;
+
+function addExpenseItem() {
+    itemCounter++;
+    const template = document.getElementById('expenseItemTemplate');
+    const clone = template.content.cloneNode(true);
+    
+    // Update item number
+    clone.querySelector('.item-number').textContent = itemCounter;
+    
+    // Set unique names for form fields
+    const itemIndex = itemCounter - 1;
+    clone.querySelector('.item-description').name = `items[${itemIndex}][description]`;
+    clone.querySelector('.item-purpose').name = `items[${itemIndex}][purpose]`;
+    clone.querySelector('.item-quantity').name = `items[${itemIndex}][quantity]`;
+    clone.querySelector('.item-rate').name = `items[${itemIndex}][rate]`;
+    clone.querySelector('.item-voucher').name = `items[${itemIndex}][voucher]`;
+    
+    // Add event listeners for automatic calculation
+    const quantityInput = clone.querySelector('.item-quantity');
+    const rateInput = clone.querySelector('.item-rate');
+    const amountInput = clone.querySelector('.item-amount');
+    
+    function calculateAmount() {
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const rate = parseFloat(rateInput.value) || 0;
+        const amount = quantity * rate;
+        amountInput.value = amount.toFixed(2);
+        calculateTotalAmount();
+    }
+    
+    quantityInput.addEventListener('input', calculateAmount);
+    rateInput.addEventListener('input', calculateAmount);
+    
+    document.getElementById('expenseItems').appendChild(clone);
+    
+    // Replace feather icons in the new item
+    feather.replace();
+}
+
+function removeExpenseItem(button) {
+    button.closest('.expense-item').remove();
+    calculateTotalAmount();
+    updateItemNumbers();
+}
+
+function updateItemNumbers() {
+    const items = document.querySelectorAll('.expense-item');
+    items.forEach((item, index) => {
+        item.querySelector('.item-number').textContent = index + 1;
+        
+        // Update form field names
+        const description = item.querySelector('.item-description');
+        const purpose = item.querySelector('.item-purpose');
+        const quantity = item.querySelector('.item-quantity');
+        const rate = item.querySelector('.item-rate');
+        const voucher = item.querySelector('.item-voucher');
+        
+        description.name = `items[${index}][description]`;
+        purpose.name = `items[${index}][purpose]`;
+        quantity.name = `items[${index}][quantity]`;
+        rate.name = `items[${index}][rate]`;
+        voucher.name = `items[${index}][voucher]`;
+    });
+}
+
+function calculateTotalAmount() {
+    let total = 0;
+    const amountInputs = document.querySelectorAll('.item-amount');
+    amountInputs.forEach(input => {
+        total += parseFloat(input.value) || 0;
+    });
+    document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+}
+
+// Add first expense item on page load
+document.addEventListener('DOMContentLoaded', function() {
+    addExpenseItem();
+});
+
+// Form validation
+document.getElementById('expenseForm').addEventListener('submit', function(e) {
+    const items = document.querySelectorAll('.expense-item');
+    if (items.length === 0) {
+        e.preventDefault();
+        alert('Please add at least one expense item.');
+        return;
+    }
+    
+    let hasValidItem = false;
+    items.forEach(item => {
+        const description = item.querySelector('.item-description').value.trim();
+        const purpose = item.querySelector('.item-purpose').value.trim();
+        const quantity = item.querySelector('.item-quantity').value;
+        const rate = item.querySelector('.item-rate').value;
+        
+        if (description && purpose && quantity && rate) {
+            hasValidItem = true;
+        }
+    });
+    
+    if (!hasValidItem) {
+        e.preventDefault();
+        alert('Please ensure at least one expense item has all required fields filled.');
+    }
+});
+</script>
+{% endblock %}

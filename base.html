@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#4caf50">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alpha Ultimate Workdesk{% endblock %}</title>
+    
+    <!-- Optimized CSS Loading -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://unpkg.com/feather-icons" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/chart.js" as="script">
+    
+    <!-- Deferred JS Loading -->
+    <script src="https://unpkg.com/feather-icons" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark workdesk-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                <i data-feather="layers" class="me-2"></i>
+                Alpha Ultimate Workdesk
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if session.user_id %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i data-feather="bar-chart-2" class="me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i data-feather="file-plus" class="me-1"></i>
+                            Submit Request
+                        </a>
+                        <ul class="dropdown-menu workdesk-dropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('purchase_request') }}">
+                                <i data-feather="shopping-cart" class="me-2"></i>
+                                Purchase Request
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('cash_demand') }}">
+                                <i data-feather="dollar-sign" class="me-2"></i>
+                                Cash Demand
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('expense_record') }}">
+                                <i data-feather="file-text" class="me-2"></i>
+                                Expense Record
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('my_submissions') }}">
+                            <i data-feather="folder" class="me-1"></i>
+                            My Submissions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_reports') }}">
+                            <i data-feather="file-text" class="me-1"></i>
+                            Reports
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('employee_registration') }}">
+                            <i data-feather="user-plus" class="me-1"></i>
+                            Employee Registration
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if session.user_id %}
+                        {% if user and user.is_admin %}
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" href="{{ url_for('admin_panel') }}">
+                                <i data-feather="shield" class="me-1"></i>
+                                Admin Panel
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i data-feather="log-out" class="me-1"></i>
+                                Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i data-feather="log-in" class="me-1"></i>
+                                Login
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container-fluid mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="workdesk-main">
+        {% include 'lang_switcher.html' %}
+{% block content %}{% endblock %}
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Initialize Feather Icons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+            
+            // Set current date
+            const currentDateElement = document.getElementById('currentDate');
+            if (currentDateElement) {
+                currentDateElement.textContent = new Date().toLocaleDateString();
+            }
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/static/service-worker.js')
+        .then(reg => console.log('Service Worker registered:', reg.scope));
+    }
+  </script>
+
+<!-- Floating AI Assistant -->
+<div id="ai-assistant" style="position:fixed;bottom:20px;right:20px;z-index:9999;">
+  <button id="toggleChat" style="background:#4caf50;color:white;padding:10px 20px;border:none;border-radius:25px;">🤖 Chat</button>
+  <div id="chatBox" style="display:none;background:white;border-radius:10px;width:300px;height:350px;box-shadow:0 0 10px rgba(0,0,0,0.3);overflow:hidden;">
+    <div id="chatLog" style="height:280px;overflow-y:auto;padding:10px;font-size:14px;"></div>
+    <input id="chatInput" type="text" placeholder="Ask me..." style="width:100%;border:none;border-top:1px solid #ccc;padding:10px;">
+  </div>
+</div>
+
+<script>
+document.getElementById("toggleChat").onclick = () => {
+  const chatBox = document.getElementById("chatBox");
+  chatBox.style.display = chatBox.style.display === "none" ? "block" : "none";
+};
+
+document.getElementById("chatInput").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    const input = this.value;
+    const log = document.getElementById("chatLog");
+    log.innerHTML += "<div><strong>You:</strong> " + input + "</div>";
+    this.value = "";
+
+    fetch("/api/ai-chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: input })
+    })
+    .then(res => res.json())
+    .then(data => {
+      log.innerHTML += "<div><strong>AI:</strong> " + data.response + "</div>";
+      log.scrollTop = log.scrollHeight;
+    });
+  }
+});
+</script>
+
+</body>
+</html>

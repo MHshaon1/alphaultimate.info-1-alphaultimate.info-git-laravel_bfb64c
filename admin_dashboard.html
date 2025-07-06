@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Admin Dashboard</h1>
+        <div>
+            <a href="{{ url_for('admin_panel') }}" class="btn btn-primary me-2">
+                <i data-feather="settings" class="me-2"></i>Admin Panel
+            </a>
+            <a href="{{ url_for('admin_reports') }}" class="btn btn-outline-primary">
+                <i data-feather="file-text" class="me-2"></i>Reports
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Purchase Requests</h6>
+                            <h2 class="mb-0">{{ stats.total_purchases }}</h2>
+                            <small>{{ stats.pending_purchases }} pending</small>
+                        </div>
+                        <i data-feather="shopping-cart" class="feature-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Cash Demands</h6>
+                            <h2 class="mb-0">{{ stats.total_demands }}</h2>
+                            <small>{{ stats.pending_demands }} pending</small>
+                        </div>
+                        <i data-feather="dollar-sign" class="feature-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Employee Registrations</h6>
+                            <h2 class="mb-0">{{ stats.total_registrations }}</h2>
+                            <small>{{ stats.pending_registrations }} pending</small>
+                        </div>
+                        <i data-feather="users" class="feature-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Expense Records</h6>
+                            <h2 class="mb-0">{{ stats.total_expenses }}</h2>
+                            <small>{{ stats.pending_expenses }} pending</small>
+                        </div>
+                        <i data-feather="file-text" class="feature-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Summary -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i data-feather="trending-up" class="me-2"></i>Approved Purchase Amount
+                    </h5>
+                    <h3 class="text-primary">${{ "%.2f"|format(stats.total_purchase_amount) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i data-feather="credit-card" class="me-2"></i>Approved Cash Demands
+                    </h5>
+                    <h3 class="text-success">${{ "%.2f"|format(stats.total_demand_amount) }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Purchase Requests</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_purchases %}
+                        {% for purchase in recent_purchases %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <strong>{{ purchase.item_name }}</strong>
+                                <br><small class="text-muted">{{ purchase.user.username }} - {{ purchase.submitted_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                            <span class="badge bg-{{ 'success' if purchase.status == 'Approved' else 'warning' if purchase.status == 'Pending' else 'danger' }}">
+                                {{ purchase.status }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No recent purchase requests</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Cash Demands</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_demands %}
+                        {% for demand in recent_demands %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <strong>{{ demand.purpose }}</strong>
+                                <br><small class="text-muted">{{ demand.demander_name }} - {{ demand.submitted_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                            <span class="badge bg-{{ 'success' if demand.status == 'Approved' else 'warning' if demand.status == 'Pending' else 'danger' }}">
+                                {{ demand.status }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No recent cash demands</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

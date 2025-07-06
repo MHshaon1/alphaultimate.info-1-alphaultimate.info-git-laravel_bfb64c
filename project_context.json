@@ -1,0 +1,59 @@
+{
+  "project_name": "Alpha Ultimate HQ Expansion",
+  "location": "Riyadh, Saudi Arabia",
+  "stakeholders": [
+    "Mohammed Maynul Hasan (Owner)",
+    "Eng. Al-Faisal (Site Director)",
+    "SmartBuild Ltd. (Subcontractor)"
+  ],
+  "phases": [
+    {
+      "phase": "Foundation",
+      "status": "Completed",
+      "issue": "concrete delay"
+    },
+    {
+      "phase": "Structure",
+      "status": "In Progress",
+      "issue": "steel delivery delay"
+    },
+    {
+      "phase": "Finishing",
+      "status": "Pending"
+    }
+  ],
+  "delays": [
+    {
+      "date": "2025-06-05",
+      "reason": "Supplier shipment delay",
+      "impact": "3 days"
+    },
+    {
+      "date": "2025-06-18",
+      "reason": "Weather (sandstorm)",
+      "impact": "1 day"
+    }
+  ],
+  "budget": {
+    "allocated": 2000000,
+    "spent": 1350000,
+    "remaining": 650000
+  },
+  "timeline": {
+    "start": "2025-04-01",
+    "original_end": "2025-12-15",
+    "adjusted_end": "2026-01-10"
+  },
+  "sensor_alerts": [
+    {
+      "location": "Zone A",
+      "temp": 41.2,
+      "noise": 93
+    },
+    {
+      "location": "Zone C",
+      "humidity": 78,
+      "issue": "water leakage"
+    }
+  ]
+}

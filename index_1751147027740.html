@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    {% if not session.user_id %}
+    <!-- Landing Page for Non-Logged In Users -->
+    <div class="row min-vh-100 align-items-center">
+        <div class="col-lg-6">
+            <div class="hero-content">
+                <h1 class="display-4 fw-bold text-white mb-4">
+                    Welcome to Alpha Ultimate Workdesk
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    Streamline your business operations with our comprehensive workflow management system. 
+                    Handle purchase requests, cash demands, and employee registrations with ease.
+                </p>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <button class="btn workdesk-btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i data-feather="log-in" class="me-2"></i>
+                        Sign In
+                    </button>
+                    <a href="{{ url_for('employee_registration') }}" class="btn workdesk-btn-outline btn-lg">
+                        <i data-feather="user-plus" class="me-2"></i>
+                        Join Our Team
+                    </a>
+                </div>
+                
+                <div class="feature-highlights">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <i data-feather="shopping-cart" class="feature-icon"></i>
+                                <h6 class="text-white">Purchase Requests</h6>
+                                <p class="text-secondary small">Submit and track purchase requests with approval workflow</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <i data-feather="dollar-sign" class="feature-icon"></i>
+                                <h6 class="text-white">Cash Demands</h6>
+                                <p class="text-secondary small">Manage cash flow and expense approvals efficiently</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <i data-feather="users" class="feature-icon"></i>
+                                <h6 class="text-white">Employee Management</h6>
+                                <p class="text-secondary small">Streamlined employee registration and onboarding</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="hero-visual">
+                <div class="dashboard-preview">
+                    <div class="preview-card">
+                        <div class="card-header">
+                            <h6 class="text-white mb-0">Workflow Overview</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat-row">
+                                <span class="text-secondary">Pending Requests</span>
+                                <span class="text-warning">12</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="text-secondary">Approved Today</span>
+                                <span class="text-success">8</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="text-secondary">Total Expenses</span>
+                                <span class="text-primary">$45,230</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Dashboard for Logged In Users -->
+    <div class="row">
+        <div class="col-12">
+            <div class="welcome-header">
+                <h2 class="text-white mb-2">Welcome back!</h2>
+                <p class="text-secondary">Here's what's happening in your workspace today.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Quick Actions -->
+        <div class="col-lg-8">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('purchase_request') }}" class="quick-action-card">
+                                <i data-feather="shopping-cart" class="quick-action-icon"></i>
+                                <h6 class="text-white mb-1">Purchase Request</h6>
+                                <p class="text-secondary small mb-0">Submit new purchase request</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('cash_demand') }}" class="quick-action-card">
+                                <i data-feather="dollar-sign" class="quick-action-icon"></i>
+                                <h6 class="text-white mb-1">Cash Demand</h6>
+                                <p class="text-secondary small mb-0">Request cash disbursement</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('my_submissions') }}" class="quick-action-card">
+                                <i data-feather="folder" class="quick-action-icon"></i>
+                                <h6 class="text-white mb-1">My Submissions</h6>
+                                <p class="text-secondary small mb-0">Track your requests</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="col-lg-4">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">Your Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="stat-item">
+                        <div class="stat-label">Pending Requests</div>
+                        <div class="stat-value text-warning">5</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Approved This Month</div>
+                        <div class="stat-value text-success">12</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Requests</div>
+                        <div class="stat-value text-primary">28</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content workdesk-modal">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white">Sign In to Workdesk</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('login') }}">
+                    {{ form.hidden_tag() if form else '' }}
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Username</label>
+                        <input type="text" name="username" class="form-control workdesk-input" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary">Password</label>
+                        <input type="password" name="password" class="form-control workdesk-input" required>
+                    </div>
+                    <button type="submit" class="btn workdesk-btn-primary w-100">
+                        <i data-feather="log-in" class="me-2"></i>
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p class="text-secondary small">
+                        Default admin credentials: admin / admin123
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-show login modal if there's a login error
+    {% if show_login %}
+    var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    loginModal.show();
+    {% endif %}
+</script>
+{% endblock %}

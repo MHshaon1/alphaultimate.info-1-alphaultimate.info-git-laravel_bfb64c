@@ -1,0 +1,49 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center">📅 Interactive Gantt Chart Builder</h2>
+  <p class="text-muted text-center">Drag to move or resize tasks. Use arrows to define dependencies.</p>
+  <div id="gantt-container" style="overflow-x:auto;">
+    <canvas id="ganttCanvas" width="1200" height="500" style="border:1px solid #ccc;"></canvas>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById("ganttCanvas");
+const ctx = canvas.getContext("2d");
+
+let tasks = [
+  { id: 1, name: "Planning", start: 50, width: 100, y: 50, color: "#4caf50" },
+  { id: 2, name: "Foundation", start: 200, width: 120, y: 150, color: "#2196f3" },
+  { id: 3, name: "Structure", start: 380, width: 140, y: 250, color: "#ff9800" }
+];
+
+function drawTasks() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  tasks.forEach(task => {
+    ctx.fillStyle = task.color;
+    ctx.fillRect(task.start, task.y, task.width, 40);
+    ctx.fillStyle = "#fff";
+    ctx.font = "14px sans-serif";
+    ctx.fillText(task.name, task.start + 5, task.y + 25);
+  });
+}
+
+let selected = null, offsetX = 0;
+canvas.onmousedown = e => {
+  const x = e.offsetX, y = e.offsetY;
+  selected = tasks.find(t => y >= t.y && y <= t.y+40 && x >= t.start && x <= t.start+t.width);
+  if (selected) offsetX = x - selected.start;
+};
+canvas.onmousemove = e => {
+  if (selected) {
+    selected.start = e.offsetX - offsetX;
+    drawTasks();
+  }
+};
+canvas.onmouseup = () => selected = null;
+
+drawTasks();
+</script>
+{% endblock %}

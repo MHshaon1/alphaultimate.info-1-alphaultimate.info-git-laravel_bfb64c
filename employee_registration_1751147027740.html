@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Registration - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h4 class="text-white mb-0">
+                        <i data-feather="user-plus" class="me-2"></i>
+                        Employee Registration
+                    </h4>
+                    <p class="text-secondary mb-0">Apply to join our team - registration requires admin approval</p>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="floating-label-group">
+                                    {{ form.first_name(class="form-control workdesk-input", id="first_name") }}
+                                    <label for="first_name" class="floating-label">First Name *</label>
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.first_name.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="floating-label-group">
+                                    {{ form.last_name(class="form-control workdesk-input", id="last_name") }}
+                                    <label for="last_name" class="floating-label">Last Name *</label>
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.last_name.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-8">
+                                <div class="floating-label-group">
+                                    {{ form.email(class="form-control workdesk-input", id="email", type="email") }}
+                                    <label for="email" class="floating-label">Email Address *</label>
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small mt-1">{{ form.email.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="floating-label-group">
+                                    {{ form.phone(class="form-control workdesk-input", id="phone") }}
+                                    <label for="phone" class="floating-label">Phone Number</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="floating-label-group">
+                                    {{ form.department(class="form-select workdesk-input", id="department") }}
+                                    <label for="department" class="floating-label">Department</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="floating-label-group">
+                                    {{ form.position(class="form-control workdesk-input", id="position") }}
+                                    <label for="position" class="floating-label">Position/Title *</label>
+                                    {% if form.position.errors %}
+                                        <div class="text-danger small mt-1">{{ form.position.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="floating-label-group">
+                                    {{ form.start_date(class="form-control workdesk-input", id="start_date", type="date") }}
+                                    <label for="start_date" class="floating-label">Preferred Start Date *</label>
+                                    {% if form.start_date.errors %}
+                                        <div class="text-danger small mt-1">{{ form.start_date.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="floating-label-group">
+                                    {{ form.salary(class="form-control workdesk-input", id="salary", step="1000", min="0") }}
+                                    <label for="salary" class="floating-label">Expected Salary ($)</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="floating-label-group">
+                                    {{ form.employee_id(class="form-control workdesk-input", id="employee_id") }}
+                                    <label for="employee_id" class="floating-label">Preferred Employee ID</label>
+                                    <div class="form-text text-secondary small">
+                                        Leave blank for auto-assignment
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="floating-label-group">
+                                    {{ form.id_number(class="form-control workdesk-input", id="id_number") }}
+                                    <label for="id_number" class="floating-label">ID Number</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- File Upload Section -->
+                        <div class="file-upload-section mt-4">
+                            <h6 class="text-white mb-3">
+                                <i data-feather="upload" class="me-2"></i>
+                                Document Uploads
+                            </h6>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary">Personal Photo</label>
+                                    {{ form.photo(class="form-control workdesk-input", accept="image/*") }}
+                                    <div class="form-text text-secondary small">
+                                        Upload a clear passport-style photo (JPG, PNG)
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary">ID Photo</label>
+                                    {{ form.id_photo(class="form-control workdesk-input", accept="image/*") }}
+                                    <div class="form-text text-secondary small">
+                                        Upload a clear photo of your ID document
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label class="form-label text-secondary">Other Documents</label>
+                                    {{ form.other_files(class="form-control workdesk-input", multiple=true) }}
+                                    <div class="form-text text-secondary small">
+                                        Upload additional documents (CV, certificates, etc.) - PDF, DOC, or images
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert workdesk-alert-info mt-4">
+                            <i data-feather="clock" class="me-2"></i>
+                            <strong>Application Process:</strong> Your registration will be reviewed by our HR team. You will receive an email notification once your application has been processed.
+                        </div>
+                        
+                        <div class="card-actions">
+                            <button type="submit" class="btn workdesk-btn-primary">
+                                <i data-feather="send" class="me-2"></i>
+                                Submit Application
+                            </button>
+                            <a href="{{ url_for('index') }}" class="btn workdesk-btn-outline">
+                                <i data-feather="x" class="me-2"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set minimum date to today
+    const startDateInput = document.getElementById('start_date');
+    const today = new Date().toISOString().split('T')[0];
+    startDateInput.min = today;
+    
+    // Format salary input
+    const salaryInput = document.getElementById('salary');
+    salaryInput.addEventListener('input', function() {
+        let value = this.value;
+        if (value && !isNaN(value)) {
+            this.value = Math.round(parseFloat(value));
+        }
+    });
+    
+    // Replace feather icons
+    feather.replace();
+</script>
+{% endblock %}

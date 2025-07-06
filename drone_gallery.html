@@ -1,0 +1,13 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>🖼️ Drone Image Gallery</h2>
+  <div class="row">
+    {% for image in images %}
+    <div class="col-md-3 mb-3">
+      <img src="{{ url_for('static', filename='drone_uploads/' ~ image) }}" class="img-fluid rounded shadow-sm">
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}

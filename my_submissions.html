@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+
+{% block title %}My Submissions - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">
+                    <i data-feather="list" class="me-2"></i>My Submissions
+                </h2>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i data-feather="plus" class="me-2"></i>New Submission
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('purchase_request') }}">
+                            <i data-feather="shopping-cart" class="me-2"></i>Purchase Request
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('cash_demand') }}">
+                            <i data-feather="dollar-sign" class="me-2"></i>Cash Demand
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('expense_record') }}">
+                            <i data-feather="file-text" class="me-2"></i>Expense Record
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Summary Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-primary">
+                                    <i data-feather="shopping-cart"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0">{{ purchases|length }}</h5>
+                                    <p class="text-muted mb-0">Purchase Requests</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-success">
+                                    <i data-feather="dollar-sign"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0">{{ demands|length }}</h5>
+                                    <p class="text-muted mb-0">Cash Demands</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-info">
+                                    <i data-feather="file-text"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0">{{ expenses|length }}</h5>
+                                    <p class="text-muted mb-0">Expense Records</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-warning">
+                                    <i data-feather="clock"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0">
+                                        {{ (purchases|selectattr('status', 'equalto', 'Pending')|list|length) + 
+                                           (demands|selectattr('status', 'equalto', 'Pending')|list|length) + 
+                                           (expenses|selectattr('status', 'equalto', 'Pending')|list|length) }}
+                                    </h5>
+                                    <p class="text-muted mb-0">Pending Reviews</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submissions Tabs -->
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#purchases">
+                                <i data-feather="shopping-cart" class="me-2"></i>Purchase Requests
+                                <span class="badge bg-secondary ms-2">{{ purchases|length }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#demands">
+                                <i data-feather="dollar-sign" class="me-2"></i>Cash Demands
+                                <span class="badge bg-secondary ms-2">{{ demands|length }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#expenses">
+                                <i data-feather="file-text" class="me-2"></i>Expense Records
+                                <span class="badge bg-secondary ms-2">{{ expenses|length }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- Purchase Requests Tab -->
+                        <div class="tab-pane fade show active" id="purchases">
+                            {% if purchases %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Item Name</th>
+                                                <th>Description</th>
+                                                <th>Quantity</th>
+                                                <th>Total Amount</th>
+                                                <th>Urgency</th>
+                                                <th>Status</th>
+                                                <th>Submitted</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for purchase in purchases %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ purchase.item_name }}</strong>
+                                                    {% if purchase.supplier %}
+                                                        <br><small class="text-muted">Supplier: {{ purchase.supplier }}</small>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <span class="d-inline-block text-truncate" style="max-width: 200px;">
+                                                        {{ purchase.description or 'N/A' }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ purchase.quantity }} @ ${{ "%.2f"|format(purchase.unit_price) }}</td>
+                                                <td>
+                                                    <strong>${{ "%.2f"|format(purchase.total_amount) }}</strong>
+                                                </td>
+                                                <td>
+                                                    <span class="badge {% if purchase.urgency == 'Critical' %}bg-danger{% elif purchase.urgency == 'High' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                        {{ purchase.urgency }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge {% if purchase.status == 'Approved' %}bg-success{% elif purchase.status == 'Rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                                        {{ purchase.status }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {{ purchase.submitted_at.strftime('%Y-%m-%d') }}
+                                                    <br><small class="text-muted">{{ purchase.submitted_at.strftime('%H:%M') }}</small>
+                                                </td>
+                                                <td>
+                                                    {% if purchase.admin_notes %}
+                                                        <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#notesModal" 
+                                                                onclick="showNotes('{{ purchase.admin_notes|replace("'", "\\'") }}')">
+                                                            <i data-feather="message-square"></i>
+                                                        </button>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i data-feather="shopping-cart" class="feature-icon-large text-muted mb-3"></i>
+                                    <h5 class="text-muted">No purchase requests submitted yet</h5>
+                                    <p class="text-muted">Start by submitting your first purchase request</p>
+                                    <a href="{{ url_for('purchase_request') }}" class="btn btn-primary">
+                                        <i data-feather="plus" class="me-2"></i>Submit Purchase Request
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Cash Demands Tab -->
+                        <div class="tab-pane fade" id="demands">
+                            {% if demands %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Purpose</th>
+                                                <th>Description</th>
+                                                <th>Amount</th>
+                                                <th>Department</th>
+                                                <th>Payment Method</th>
+                                                <th>Status</th>
+                                                <th>Submitted</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for demand in demands %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ demand.purpose }}</strong>
+                                                    <br><small class="text-muted">ID: {{ demand.demander_id }}</small>
+                                                </td>
+                                                <td>
+                                                    <span class="d-inline-block text-truncate" style="max-width: 200px;">
+                                                        {{ demand.description }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <strong>${{ "%.2f"|format(demand.amount) }}</strong>
+                                                </td>
+                                                <td>{{ demand.department }}</td>
+                                                <td>{{ demand.payment_method }}</td>
+                                                <td>
+                                                    <span class="badge {% if demand.status == 'Approved' %}bg-success{% elif demand.status == 'Rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                                        {{ demand.status }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {{ demand.submitted_at.strftime('%Y-%m-%d') }}
+                                                    <br><small class="text-muted">{{ demand.submitted_at.strftime('%H:%M') }}</small>
+                                                </td>
+                                                <td>
+                                                    {% if demand.admin_notes %}
+                                                        <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#notesModal" 
+                                                                onclick="showNotes('{{ demand.admin_notes|replace("'", "\\'") }}')">
+                                                            <i data-feather="message-square"></i>
+                                                        </button>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i data-feather="dollar-sign" class="feature-icon-large text-muted mb-3"></i>
+                                    <h5 class="text-muted">No cash demands submitted yet</h5>
+                                    <p class="text-muted">Submit your first cash demand request</p>
+                                    <a href="{{ url_for('cash_demand') }}" class="btn btn-success">
+                                        <i data-feather="plus" class="me-2"></i>Submit Cash Demand
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Expense Records Tab -->
+                        <div class="tab-pane fade" id="expenses">
+                            {% if expenses %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Expense ID</th>
+                                                <th>Department</th>
+                                                <th>Items Count</th>
+                                                <th>Total Amount</th>
+                                                <th>Status</th>
+                                                <th>Submitted</th>
+                                                <th>Details</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for expense in expenses %}
+                                            <tr>
+                                                <td><strong>{{ expense.expense_id }}</strong></td>
+                                                <td>{{ expense.department }}</td>
+                                                <td>{{ expense.expense_items|length }} items</td>
+                                                <td>
+                                                    <strong>${{ "%.2f"|format(expense.expense_items|sum(attribute='amount')) }}</strong>
+                                                </td>
+                                                <td>
+                                                    <span class="badge {% if expense.status == 'Approved' %}bg-success{% elif expense.status == 'Rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                                        {{ expense.status }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {{ expense.submitted_at.strftime('%Y-%m-%d') }}
+                                                    <br><small class="text-muted">{{ expense.submitted_at.strftime('%H:%M') }}</small>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#expenseDetailsModal" 
+                                                            onclick="showExpenseDetails({{ expense.id }}, '{{ expense.expense_id }}', {{ expense.expense_items|tojson|safe }})">
+                                                        <i data-feather="eye"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    {% if expense.admin_notes %}
+                                                        <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#notesModal" 
+                                                                onclick="showNotes('{{ expense.admin_notes|replace("'", "\\'") }}')">
+                                                            <i data-feather="message-square"></i>
+                                                        </button>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i data-feather="file-text" class="feature-icon-large text-muted mb-3"></i>
+                                    <h5 class="text-muted">No expense records submitted yet</h5>
+                                    <p class="text-muted">Submit your first expense record</p>
+                                    <a href="{{ url_for('expense_record') }}" class="btn btn-info">
+                                        <i data-feather="plus" class="me-2"></i>Submit Expense Record
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notes Modal -->
+<div class="modal fade" id="notesModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="message-square" class="me-2"></i>Admin Notes
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="notesContent" class="bg-light p-3 rounded"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Expense Details Modal -->
+<div class="modal fade" id="expenseDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="file-text" class="me-2"></i>Expense Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="expenseDetailsContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showNotes(notes) {
+    document.getElementById('notesContent').textContent = notes;
+}
+
+function showExpenseDetails(expenseId, expenseIdString, items) {
+    const content = document.getElementById('expenseDetailsContent');
+    
+    let html = `
+        <h6>Expense ID: ${expenseIdString}</h6>
+        <div class="table-responsive mt-3">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Purpose</th>
+                        <th>Quantity</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                        <th>Voucher</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    let total = 0;
+    items.forEach(item => {
+        total += item.amount;
+        html += `
+            <tr>
+                <td>${item.description}</td>
+                <td>${item.purpose}</td>
+                <td>${item.quantity}</td>
+                <td>$${item.rate.toFixed(2)}</td>
+                <td>$${item.amount.toFixed(2)}</td>
+                <td>${item.voucher_filename ? '<i class="text-success" data-feather="check"></i> Attached' : '<i class="text-muted" data-feather="x"></i> None'}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                </tbody>
+                <tfoot>
+                    <tr class="fw-bold">
+                        <td colspan="4">Total</td>
+                        <td>$${total.toFixed(2)}</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    feather.replace();
+}
+</script>
+{% endblock %}

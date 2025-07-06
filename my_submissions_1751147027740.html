@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}My Submissions - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <h2 class="text-white">
+            <i data-feather="folder" class="me-2"></i>
+            My Submissions
+        </h2>
+        <p class="text-secondary">Track the status of your submitted requests</p>
+    </div>
+    
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card stat-card-info">
+                <div class="stat-icon">
+                    <i data-feather="clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ (purchases|selectattr('status', 'equalto', 'Pending')|list|length) + (demands|selectattr('status', 'equalto', 'Pending')|list|length) + (expenses|selectattr('status', 'equalto', 'Pending')|list|length) }}</h3>
+                    <p>Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card-success">
+                <div class="stat-icon">
+                    <i data-feather="check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ (purchases|selectattr('status', 'equalto', 'Approved')|list|length) + (demands|selectattr('status', 'equalto', 'Approved')|list|length) + (expenses|selectattr('status', 'equalto', 'Approved')|list|length) }}</h3>
+                    <p>Approved</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card-danger">
+                <div class="stat-icon">
+                    <i data-feather="x-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ (purchases|selectattr('status', 'equalto', 'Rejected')|list|length) + (demands|selectattr('status', 'equalto', 'Rejected')|list|length) + (expenses|selectattr('status', 'equalto', 'Rejected')|list|length) }}</h3>
+                    <p>Rejected</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-card-primary">
+                <div class="stat-icon">
+                    <i data-feather="file-text"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ purchases|length + demands|length + expenses|length }}</h3>
+                    <p>Total</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Submissions Tabs -->
+    <div class="workdesk-card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="submissionTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+                        <i data-feather="list" class="me-2"></i>
+                        All Submissions
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="purchases-tab" data-bs-toggle="tab" data-bs-target="#purchases" type="button" role="tab">
+                        <i data-feather="shopping-cart" class="me-2"></i>
+                        Purchase Requests ({{ purchases|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="demands-tab" data-bs-toggle="tab" data-bs-target="#demands" type="button" role="tab">
+                        <i data-feather="dollar-sign" class="me-2"></i>
+                        Cash Demands ({{ demands|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button" role="tab">
+                        <i data-feather="receipt" class="me-2"></i>
+                        Expense Records ({{ expenses|length }})
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card-body">
+            <div class="tab-content" id="submissionTabsContent">
+                <!-- All Submissions -->
+                <div class="tab-pane fade show active" id="all" role="tabpanel">
+                    {% set all_submissions = [] %}
+                    {% for purchase in purchases %}
+                        {% set _ = all_submissions.append(('purchase', purchase)) %}
+                    {% endfor %}
+                    {% for demand in demands %}
+                        {% set _ = all_submissions.append(('demand', demand)) %}
+                    {% endfor %}
+                    {% for expense in expenses %}
+                        {% set _ = all_submissions.append(('expense', expense)) %}
+                    {% endfor %}
+                    
+                    {% if all_submissions %}
+                        <div class="timeline">
+                            {% for type, item in all_submissions|sort(attribute='1.submitted_at', reverse=true) %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker status-{{ item.status.lower() }}">
+                                    {% if type == 'purchase' %}
+                                        <i data-feather="shopping-cart"></i>
+                                    {% elif type == 'demand' %}
+                                        <i data-feather="dollar-sign"></i>
+                                    {% else %}
+                                        <i data-feather="receipt"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-header">
+                                        <h6 class="text-white mb-1">
+                                            {% if type == 'purchase' %}
+                                                Purchase Request: {{ item.item_name }}
+                                            {% elif type == 'demand' %}
+                                                Cash Demand: {{ item.purpose }}
+                                            {% else %}
+                                                Expense Record: {{ item.expense_id }}
+                                            {% endif %}
+                                        </h6>
+                                        <small class="text-secondary">{{ item.submitted_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                                    </div>
+                                    <div class="timeline-body">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                {% if type == 'purchase' %}
+                                                    <p class="text-secondary mb-1">Quantity: {{ item.quantity }} @ ${{ "%.2f"|format(item.unit_price) }}</p>
+                                                    <p class="text-secondary mb-1">Total: ${{ "%.2f"|format(item.total_amount) }}</p>
+                                                    <p class="text-secondary mb-1">Supplier: {{ item.supplier or 'Not specified' }}</p>
+                                                {% elif type == 'demand' %}
+                                                    <p class="text-secondary mb-1">Amount: ${{ "%.2f"|format(item.amount) }}</p>
+                                                    <p class="text-secondary mb-1">Department: {{ item.department }}</p>
+                                                    <p class="text-secondary mb-1">Payment Method: {{ item.payment_method }}</p>
+                                                {% else %}
+                                                    <p class="text-secondary mb-1">Department: {{ item.department }}</p>
+                                                    <p class="text-secondary mb-1">Items: {{ item.expense_items|length }}</p>
+                                                    <p class="text-secondary mb-1">Total: ${{ "%.2f"|format(item.expense_items|sum(attribute='amount')) }}</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-4 text-end">
+                                                <span class="badge status-{{ item.status.lower() }} mb-2">{{ item.status }}</span><br>
+                                                {% if type != 'expense' %}
+                                                <span class="badge urgency-{{ item.urgency.lower() }}">{{ item.urgency }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% if item.admin_notes %}
+                                        <div class="admin-notes mt-2">
+                                            <strong class="text-warning">Admin Notes:</strong>
+                                            <p class="text-secondary mb-0">{{ item.admin_notes }}</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="inbox" class="empty-state-icon"></i>
+                            <h5>No Submissions Yet</h5>
+                            <p class="text-secondary">You haven't submitted any requests yet.</p>
+                            <div class="mt-3">
+                                <a href="{{ url_for('purchase_request') }}" class="btn workdesk-btn-primary me-2">
+                                    <i data-feather="shopping-cart" class="me-2"></i>
+                                    Submit Purchase Request
+                                </a>
+                                <a href="{{ url_for('cash_demand') }}" class="btn workdesk-btn-outline">
+                                    <i data-feather="dollar-sign" class="me-2"></i>
+                                    Submit Cash Demand
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Purchase Requests -->
+                <div class="tab-pane fade" id="purchases" role="tabpanel">
+                    {% if purchases %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Total Amount</th>
+                                        <th>Urgency</th>
+                                        <th>Status</th>
+                                        <th>Submitted</th>
+                                        <th>Reviewed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for purchase in purchases %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ purchase.item_name }}</strong><br>
+                                            <small class="text-secondary">{{ purchase.quantity }} x ${{ "%.2f"|format(purchase.unit_price) }}</small>
+                                        </td>
+                                        <td>${{ "%.2f"|format(purchase.total_amount) }}</td>
+                                        <td>
+                                            <span class="badge urgency-{{ purchase.urgency.lower() }}">
+                                                {{ purchase.urgency }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge status-{{ purchase.status.lower() }}">
+                                                {{ purchase.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ purchase.submitted_at.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            {% if purchase.reviewed_at %}
+                                                {{ purchase.reviewed_at.strftime('%m/%d/%Y') }}
+                                            {% else %}
+                                                <span class="text-secondary">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="shopping-cart" class="empty-state-icon"></i>
+                            <h5>No Purchase Requests</h5>
+                            <p class="text-secondary">You haven't submitted any purchase requests yet.</p>
+                            <a href="{{ url_for('purchase_request') }}" class="btn workdesk-btn-primary">
+                                <i data-feather="plus" class="me-2"></i>
+                                Submit Purchase Request
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Cash Demands -->
+                <div class="tab-pane fade" id="demands" role="tabpanel">
+                    {% if demands %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Purpose</th>
+                                        <th>Amount</th>
+                                        <th>Department</th>
+                                        <th>Status</th>
+                                        <th>Submitted</th>
+                                        <th>Reviewed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for demand in demands %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ demand.purpose }}</strong><br>
+                                            <small class="text-secondary">{{ demand.payment_method }}</small>
+                                        </td>
+                                        <td>${{ "%.2f"|format(demand.amount) }}</td>
+                                        <td>{{ demand.department }}</td>
+                                        <td>
+                                            <span class="badge status-{{ demand.status.lower() }}">
+                                                {{ demand.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ demand.submitted_at.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            {% if demand.reviewed_at %}
+                                                {{ demand.reviewed_at.strftime('%m/%d/%Y') }}
+                                            {% else %}
+                                                <span class="text-secondary">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="dollar-sign" class="empty-state-icon"></i>
+                            <h5>No Cash Demands</h5>
+                            <p class="text-secondary">You haven't submitted any cash demand requests yet.</p>
+                            <a href="{{ url_for('cash_demand') }}" class="btn workdesk-btn-primary">
+                                <i data-feather="plus" class="me-2"></i>
+                                Submit Cash Demand
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Expense Records -->
+                <div class="tab-pane fade" id="expenses" role="tabpanel">
+                    {% if expenses %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Expense ID</th>
+                                        <th>Department</th>
+                                        <th>Items</th>
+                                        <th>Total Amount</th>
+                                        <th>Status</th>
+                                        <th>Submitted</th>
+                                        <th>Reviewed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for expense in expenses %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ expense.expense_id }}</strong>
+                                        </td>
+                                        <td>{{ expense.department }}</td>
+                                        <td>{{ expense.expense_items|length }}</td>
+                                        <td>${{ "%.2f"|format(expense.expense_items|sum(attribute='amount')) }}</td>
+                                        <td>
+                                            <span class="badge status-{{ expense.status.lower() }}">
+                                                {{ expense.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ expense.submitted_at.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            {% if expense.reviewed_at %}
+                                                {{ expense.reviewed_at.strftime('%m/%d/%Y') }}
+                                            {% else %}
+                                                <span class="text-secondary">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="receipt" class="empty-state-icon"></i>
+                            <h5>No Expense Records</h5>
+                            <p class="text-secondary">You haven't submitted any expense records yet.</p>
+                            <a href="{{ url_for('expense_record') }}" class="btn workdesk-btn-primary">
+                                <i data-feather="plus" class="me-2"></i>
+                                Submit Expense Record
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Replace feather icons
+    feather.replace();
+</script>
+{% endblock %}

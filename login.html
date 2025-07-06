@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i data-feather="user" class="feature-icon-large text-primary"></i>
+                        <h3 class="fw-bold mt-3">Welcome Back</h3>
+                        <p class="text-muted">Sign in to your account</p>
+                    </div>
+                    
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form.username.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i data-feather="user" class="feather-sm"></i>
+                                </span>
+                                {{ form.username(class="form-control") }}
+                            </div>
+                            {% for error in form.username.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.password.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i data-feather="lock" class="feather-sm"></i>
+                                </span>
+                                {{ form.password(class="form-control") }}
+                            </div>
+                            {% for error in form.password.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                            <i data-feather="log-in" class="me-2"></i>Sign In
+                        </button>
+                    </form>
+                    
+                    <div class="text-center">
+                        <div class="text-muted mb-3">Don't have an account?</div>
+                        <a href="{{ url_for('employee_registration') }}" class="btn btn-outline-primary">
+                            <i data-feather="user-plus" class="me-2"></i>Register as Employee
+                        </a>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="text-dark mb-2">Demo Credentials</h6>
+                        <small class="text-muted">
+                            <strong>Admin:</strong> username: admin, password: admin123
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

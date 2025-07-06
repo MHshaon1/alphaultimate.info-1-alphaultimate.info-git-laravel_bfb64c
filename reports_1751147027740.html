@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <h2 class="text-white">
+            <i data-feather="file-text" class="me-2"></i>
+            Business Reports
+        </h2>
+        <p class="text-secondary">Generate comprehensive PDF reports for business analysis</p>
+    </div>
+    
+    {% if not user.is_admin %}
+    <div class="alert alert-warning">
+        <i data-feather="lock" class="me-2"></i>
+        <strong>Access Restricted:</strong> Only administrators can generate reports.
+    </div>
+    {% else %}
+    
+    <!-- Report Types -->
+    <div class="row g-4">
+        <!-- Daily Report -->
+        <div class="col-lg-4">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">
+                        <i data-feather="calendar" class="me-2"></i>
+                        Daily Report
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-secondary mb-3">
+                        Generate detailed daily activity report with all transactions, approvals, and registrations for a specific date.
+                    </p>
+                    
+                    <form id="dailyReportForm" class="mb-3">
+                        <div class="floating-label-group">
+                            <input type="date" class="form-control workdesk-input" id="dailyDate" value="{{ today }}">
+                            <label for="dailyDate" class="floating-label">Report Date</label>
+                        </div>
+                    </form>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn workdesk-btn-primary btn-sm" onclick="generateReport('daily')">
+                            <i data-feather="download" class="me-2"></i>
+                            Download PDF
+                        </button>
+                        <button class="btn workdesk-btn-outline btn-sm" onclick="previewReport('daily')">
+                            <i data-feather="eye" class="me-2"></i>
+                            Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weekly Report -->
+        <div class="col-lg-4">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">
+                        <i data-feather="calendar" class="me-2"></i>
+                        Weekly Report
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-secondary mb-3">
+                        Generate comprehensive weekly summary covering all business activities and trends for the selected week.
+                    </p>
+                    
+                    <form id="weeklyReportForm" class="mb-3">
+                        <div class="floating-label-group">
+                            <input type="date" class="form-control workdesk-input" id="weeklyDate" value="{{ monday }}">
+                            <label for="weeklyDate" class="floating-label">Week Start (Monday)</label>
+                        </div>
+                    </form>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn workdesk-btn-primary btn-sm" onclick="generateReport('weekly')">
+                            <i data-feather="download" class="me-2"></i>
+                            Download PDF
+                        </button>
+                        <button class="btn workdesk-btn-outline btn-sm" onclick="previewReport('weekly')">
+                            <i data-feather="eye" class="me-2"></i>
+                            Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Monthly Report -->
+        <div class="col-lg-4">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">
+                        <i data-feather="calendar" class="me-2"></i>
+                        Monthly Report
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-secondary mb-3">
+                        Generate complete monthly business report with analytics, charts, and detailed breakdowns for the selected month.
+                    </p>
+                    
+                    <form id="monthlyReportForm" class="mb-3">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="floating-label-group">
+                                    <select class="form-select workdesk-input" id="monthlyMonth">
+                                        <option value="1" {% if current_month == 1 %}selected{% endif %}>January</option>
+                                        <option value="2" {% if current_month == 2 %}selected{% endif %}>February</option>
+                                        <option value="3" {% if current_month == 3 %}selected{% endif %}>March</option>
+                                        <option value="4" {% if current_month == 4 %}selected{% endif %}>April</option>
+                                        <option value="5" {% if current_month == 5 %}selected{% endif %}>May</option>
+                                        <option value="6" {% if current_month == 6 %}selected{% endif %}>June</option>
+                                        <option value="7" {% if current_month == 7 %}selected{% endif %}>July</option>
+                                        <option value="8" {% if current_month == 8 %}selected{% endif %}>August</option>
+                                        <option value="9" {% if current_month == 9 %}selected{% endif %}>September</option>
+                                        <option value="10" {% if current_month == 10 %}selected{% endif %}>October</option>
+                                        <option value="11" {% if current_month == 11 %}selected{% endif %}>November</option>
+                                        <option value="12" {% if current_month == 12 %}selected{% endif %}>December</option>
+                                    </select>
+                                    <label for="monthlyMonth" class="floating-label">Month</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="floating-label-group">
+                                    <select class="form-select workdesk-input" id="monthlyYear">
+                                        {% for year in range(2020, 2030) %}
+                                        <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="monthlyYear" class="floating-label">Year</label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn workdesk-btn-primary btn-sm" onclick="generateReport('monthly')">
+                            <i data-feather="download" class="me-2"></i>
+                            Download PDF
+                        </button>
+                        <button class="btn workdesk-btn-outline btn-sm" onclick="previewReport('monthly')">
+                            <i data-feather="eye" class="me-2"></i>
+                            Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Report Features -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="workdesk-card">
+                <div class="card-header">
+                    <h5 class="text-white mb-0">Report Features</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i data-feather="bar-chart-2"></i>
+                                </div>
+                                <h6 class="text-white">Executive Summary</h6>
+                                <p class="text-secondary small">Key metrics and financial overview with total amounts and counts</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i data-feather="pie-chart"></i>
+                                </div>
+                                <h6 class="text-white">Visual Charts</h6>
+                                <p class="text-secondary small">Status distribution charts and analytics for better insights</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i data-feather="list"></i>
+                                </div>
+                                <h6 class="text-white">Detailed Tables</h6>
+                                <p class="text-secondary small">Comprehensive data tables with all transaction details</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i data-feather="users"></i>
+                                </div>
+                                <h6 class="text-white">Employee Data</h6>
+                                <p class="text-secondary small">Registration tracking and HR analytics integration</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function generateReport(type) {
+    let url = `/generate-report/${type}`;
+    let params = new URLSearchParams();
+    
+    if (type === 'daily') {
+        const date = document.getElementById('dailyDate').value;
+        if (date) params.append('date', date);
+    } else if (type === 'weekly') {
+        const week = document.getElementById('weeklyDate').value;
+        if (week) params.append('week', week);
+    } else if (type === 'monthly') {
+        const month = document.getElementById('monthlyMonth').value;
+        const year = document.getElementById('monthlyYear').value;
+        params.append('month', month);
+        params.append('year', year);
+    }
+    
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    
+    // Show loading state
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i data-feather="loader" class="me-2"></i>Generating...';
+    button.disabled = true;
+    
+    // Create a temporary link to download the file
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Reset button after a delay
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        feather.replace();
+    }, 2000);
+}
+
+function previewReport(type) {
+    let url = `/preview-report/${type}`;
+    let params = new URLSearchParams();
+    
+    if (type === 'daily') {
+        const date = document.getElementById('dailyDate').value;
+        if (date) params.append('date', date);
+    } else if (type === 'weekly') {
+        const week = document.getElementById('weeklyDate').value;
+        if (week) params.append('week', week);
+    } else if (type === 'monthly') {
+        const month = document.getElementById('monthlyMonth').value;
+        const year = document.getElementById('monthlyYear').value;
+        params.append('month', month);
+        params.append('year', year);
+    }
+    
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    
+    // Open in new tab
+    window.open(url, '_blank');
+}
+
+// Set default values
+document.addEventListener('DOMContentLoaded', function() {
+    // Set today's date for daily report
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dailyDate').value = today;
+    
+    // Set this week's Monday for weekly report
+    const now = new Date();
+    const monday = new Date(now.setDate(now.getDate() - now.getDay() + 1));
+    document.getElementById('weeklyDate').value = monday.toISOString().split('T')[0];
+    
+    feather.replace();
+});
+</script>
+
+<style>
+.feature-item {
+    text-align: center;
+    padding: 20px 10px;
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    background-color: var(--secondary-bg);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+}
+
+.feature-icon i {
+    width: 24px;
+    height: 24px;
+    color: var(--accent-color);
+}
+
+.feature-item h6 {
+    margin-bottom: 8px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,155 @@
+
+<!-- BEGIN: Animated Welcome Screen -->
+<div id="welcome-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; color:#fff; display:flex; justify-content:center; align-items:center; flex-direction:column; z-index:9999; animation: fadeOut 1s ease-in-out 4s forwards;">
+    <h1 id="greeting-text" style="font-size:3em; margin-bottom:20px;">Welcome</h1>
+    <p style="font-size:1.2em;">Loading your Alpha Ultimate dashboard...</p>
+</div>
+<style>
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const hour = now.getHours();
+    let greeting = "Welcome";
+    if (hour < 12) greeting = "Good Morning ☀️";
+    else if (hour < 18) greeting = "Good Afternoon 🌤️";
+    else greeting = "Good Evening 🌙";
+
+    document.getElementById('greeting-text').textContent = greeting;
+    setTimeout(() => {
+      document.getElementById('welcome-screen').style.display = 'none';
+    }, 5000);
+  });
+</script>
+<!-- END: Animated Welcome Screen -->
+{% extends "base.html" %}
+
+{% block title %}Home - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-primary mb-4">
+                    Welcome to Alpha Ultimate Workdesk
+                </h1>
+                <p class="lead mb-4">
+                    Streamline your business workflows with our comprehensive management system. 
+                    Submit requests, track expenses, manage employees, and get AI-powered insights.
+                </p>
+                
+                {% if not session.user_id %}
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                            <i data-feather="log-in" class="me-2"></i>Login
+                        </a>
+                        <a href="{{ url_for('employee_registration') }}" class="btn btn-outline-primary btn-lg">
+                            <i data-feather="user-plus" class="me-2"></i>Register Employee
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                            <i data-feather="home" class="me-2"></i>Go to Dashboard
+                        </a>
+                        <a href="{{ url_for('purchase_request') }}" class="btn btn-outline-primary btn-lg">
+                            <i data-feather="plus" class="me-2"></i>Submit Request
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i data-feather="shopping-cart"></i>
+                            </div>
+                            <h5>Purchase Requests</h5>
+                            <p class="text-muted">Submit and track purchase requests with AI-powered urgency analysis.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i data-feather="dollar-sign"></i>
+                            </div>
+                            <h5>Cash Demands</h5>
+                            <p class="text-muted">Manage cash flow with streamlined demand requests and approvals.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i data-feather="file-text"></i>
+                            </div>
+                            <h5>Expense Records</h5>
+                            <p class="text-muted">Track and manage expenses with detailed reporting and voucher uploads.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i data-feather="users"></i>
+                            </div>
+                            <h5>Employee Management</h5>
+                            <p class="text-muted">Streamlined employee registration and document management.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="features-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="fw-bold">Powerful Features</h2>
+                <p class="text-muted">Everything you need to manage your business workflows</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon-large mb-3">
+                        <i data-feather="zap" class="text-warning"></i>
+                    </div>
+                    <h5>AI-Powered Insights</h5>
+                    <p class="text-muted">Get intelligent urgency analysis and automated approval notes powered by OpenAI.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon-large mb-3">
+                        <i data-feather="smartphone" class="text-info"></i>
+                    </div>
+                    <h5>SMS Notifications</h5>
+                    <p class="text-muted">Real-time SMS alerts for admins and approval notifications via Twilio integration.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon-large mb-3">
+                        <i data-feather="bar-chart-2" class="text-success"></i>
+                    </div>
+                    <h5>Advanced Reports</h5>
+                    <p class="text-muted">Generate comprehensive PDF reports with detailed analytics and insights.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

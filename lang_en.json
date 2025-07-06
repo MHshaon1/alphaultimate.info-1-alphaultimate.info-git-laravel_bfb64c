@@ -1,0 +1,22 @@
+{
+  "dashboard": "Dashboard",
+  "login": "Login",
+  "logout": "Logout",
+  "submit": "Submit",
+  "timesheet": "Timesheet",
+  "expense": "Expense",
+  "project_health": "Project Health",
+  "risk_prediction": "Risk Prediction",
+  "ai_assistant": "AI Assistant",
+  "leaderboard": "Leaderboard",
+  "notifications": "Notifications",
+  "upload": "Upload",
+  "gallery": "Gallery",
+  "gantt_chart": "Gantt Chart",
+  "iot_dashboard": "IoT Dashboard",
+  "vr_viewer": "VR Viewer",
+  "language": "Language",
+  "english": "English",
+  "arabic": "Arabic",
+  "bangla": "Bangla"
+}

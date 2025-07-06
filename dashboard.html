@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Alpha Ultimate Workdesk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">
+                    <i data-feather="home" class="me-2"></i>Dashboard
+                </h2>
+                <div class="d-flex gap-2">
+                    {% if user.is_admin %}
+                        <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-primary">
+                            <i data-feather="settings" class="me-2"></i>Admin Panel
+                        </a>
+                    {% endif %}
+                    <a href="{{ url_for('purchase_request') }}" class="btn btn-primary">
+                        <i data-feather="plus" class="me-2"></i>New Request
+                    </a>
+                </div>
+            </div>
+            
+            {% if user.is_admin %}
+                <!-- Admin Dashboard -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-primary">
+                                        <i data-feather="shopping-cart"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h5 class="mb-0">{{ stats.total_purchases }}</h5>
+                                        <p class="text-muted mb-0">Total Purchase Requests</p>
+                                        <small class="text-warning">{{ stats.pending_purchases }} pending</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-success">
+                                        <i data-feather="dollar-sign"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h5 class="mb-0">{{ stats.total_demands }}</h5>
+                                        <p class="text-muted mb-0">Total Cash Demands</p>
+                                        <small class="text-warning">{{ stats.pending_demands }} pending</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-info">
+                                        <i data-feather="file-text"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h5 class="mb-0">{{ stats.total_expenses }}</h5>
+                                        <p class="text-muted mb-0">Total Expense Records</p>
+                                        <small class="text-warning">{{ stats.pending_expenses }} pending</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-warning">
+                                        <i data-feather="users"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h5 class="mb-0">{{ stats.total_registrations }}</h5>
+                                        <p class="text-muted mb-0">Employee Registrations</p>
+                                        <small class="text-warning">{{ stats.pending_registrations }} pending</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Financial Overview -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i data-feather="trending-up" class="me-2"></i>Financial Overview
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Purchase Requests (Approved)</span>
+                                        <strong>${{ "%.2f"|format(stats.total_purchase_amount) }}</strong>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Cash Demands (Approved)</span>
+                                        <strong>${{ "%.2f"|format(stats.total_demand_amount) }}</strong>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-bold">Total Approved Amount</span>
+                                    <strong class="text-primary">${{ "%.2f"|format(stats.total_purchase_amount + stats.total_demand_amount) }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i data-feather="activity" class="me-2"></i>Recent Activity
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if recent_purchases or recent_demands %}
+                                    {% for purchase in recent_purchases[:3] %}
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i data-feather="shopping-cart" class="me-2 text-primary"></i>
+                                            <div class="flex-grow-1">
+                                                <small>{{ purchase.user.username }} submitted purchase request</small>
+                                                <div class="text-muted" style="font-size: 0.75rem;">{{ purchase.submitted_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    {% for demand in recent_demands[:3] %}
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i data-feather="dollar-sign" class="me-2 text-success"></i>
+                                            <div class="flex-grow-1">
+                                                <small>{{ demand.user.username }} submitted cash demand</small>
+                                                <div class="text-muted" style="font-size: 0.75rem;">{{ demand.submitted_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-center text-muted py-3">
+                                        <i data-feather="clock" class="mb-2"></i>
+                                        <div>No recent activity</div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            {% else %}
+                <!-- User Dashboard -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i data-feather="shopping-cart" class="feature-icon-large text-primary mb-3"></i>
+                                <h5>Purchase Requests</h5>
+                                <p class="text-muted">Submit and track purchase requests</p>
+                                <a href="{{ url_for('purchase_request') }}" class="btn btn-primary">
+                                    <i data-feather="plus" class="me-2"></i>New Request
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i data-feather="dollar-sign" class="feature-icon-large text-success mb-3"></i>
+                                <h5>Cash Demands</h5>
+                                <p class="text-muted">Request cash advances and payments</p>
+                                <a href="{{ url_for('cash_demand') }}" class="btn btn-success">
+                                    <i data-feather="plus" class="me-2"></i>New Demand
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i data-feather="file-text" class="feature-icon-large text-info mb-3"></i>
+                                <h5>Expense Records</h5>
+                                <p class="text-muted">Submit expense claims with vouchers</p>
+                                <a href="{{ url_for('expense_record') }}" class="btn btn-info">
+                                    <i data-feather="plus" class="me-2"></i>New Expense
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User's Recent Submissions -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i data-feather="list" class="me-2"></i>My Recent Submissions
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if user_purchases or user_demands or user_expenses %}
+                                    <div class="row">
+                                        {% if user_purchases %}
+                                            <div class="col-md-4">
+                                                <h6 class="text-primary">Purchase Requests</h6>
+                                                {% for purchase in user_purchases %}
+                                                    <div class="border rounded p-2 mb-2">
+                                                        <div class="fw-bold">{{ purchase.item_name }}</div>
+                                                        <div class="text-muted small">${{ "%.2f"|format(purchase.total_amount) }}</div>
+                                                        <span class="badge {% if purchase.status == 'Approved' %}bg-success{% elif purchase.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                            {{ purchase.status }}
+                                                        </span>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if user_demands %}
+                                            <div class="col-md-4">
+                                                <h6 class="text-success">Cash Demands</h6>
+                                                {% for demand in user_demands %}
+                                                    <div class="border rounded p-2 mb-2">
+                                                        <div class="fw-bold">{{ demand.purpose }}</div>
+                                                        <div class="text-muted small">${{ "%.2f"|format(demand.amount) }}</div>
+                                                        <span class="badge {% if demand.status == 'Approved' %}bg-success{% elif demand.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                            {{ demand.status }}
+                                                        </span>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if user_expenses %}
+                                            <div class="col-md-4">
+                                                <h6 class="text-info">Expense Records</h6>
+                                                {% for expense in user_expenses %}
+                                                    <div class="border rounded p-2 mb-2">
+                                                        <div class="fw-bold">{{ expense.expense_id }}</div>
+                                                        <div class="text-muted small">{{ expense.department }}</div>
+                                                        <span class="badge {% if expense.status == 'Approved' %}bg-success{% elif expense.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                            {{ expense.status }}
+                                                        </span>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="text-center mt-3">
+                                        <a href="{{ url_for('my_submissions') }}" class="btn btn-outline-primary">
+                                            <i data-feather="list" class="me-2"></i>View All Submissions
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <i data-feather="inbox" class="feature-icon-large text-muted mb-3"></i>
+                                        <h5 class="text-muted">No submissions yet</h5>
+                                        <p class="text-muted">Get started by submitting your first request</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

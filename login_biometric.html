@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🔒 Biometric Login</title>
+</head>
+<body>
+  <h2>🔐 Secure Biometric Login</h2>
+  <button onclick="login()">Login with Face/Touch ID</button>
+  <div id="status"></div>
+
+  <script>
+    async function login() {
+      if (!window.PublicKeyCredential) {
+        document.getElementById('status').textContent = 'WebAuthn not supported';
+        return;
+      }
+
+      const challenge = Uint8Array.from("randomChallenge123", c => c.charCodeAt(0));
+      const credential = await navigator.credentials.get({
+        publicKey: {
+          challenge: challenge,
+          timeout: 60000,
+          allowCredentials: [],
+          userVerification: 'required'
+        }
+      }).catch(e => {
+        document.getElementById('status').textContent = 'Login failed: ' + e.message;
+      });
+
+      if (credential) {
+        document.getElementById('status').textContent = '✅ Biometric Login Successful';
+        // send credential.response to Flask backend here
+      }
+    }
+  </script>
+</body>
+</html>

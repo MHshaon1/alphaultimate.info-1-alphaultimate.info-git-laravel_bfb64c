@@ -1,0 +1,22 @@
+{
+  "dashboard": "ড্যাশবোর্ড",
+  "login": "লগইন",
+  "logout": "লগআউট",
+  "submit": "জমা দিন",
+  "timesheet": "টাইমশীট",
+  "expense": "ব্যয়",
+  "project_health": "প্রকল্পের স্বাস্থ্য",
+  "risk_prediction": "ঝুঁকি পূর্বাভাস",
+  "ai_assistant": "এআই সহকারী",
+  "leaderboard": "লিডারবোর্ড",
+  "notifications": "বিজ্ঞপ্তি",
+  "upload": "আপলোড",
+  "gallery": "গ্যালারি",
+  "gantt_chart": "গ্যান্ট চার্ট",
+  "iot_dashboard": "আইওটি ড্যাশবোর্ড",
+  "vr_viewer": "ভিআর ভিউয়ার",
+  "language": "ভাষা",
+  "english": "ইংরেজি",
+  "arabic": "আরবি",
+  "bangla": "বাংলা"
+}
